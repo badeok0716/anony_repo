@@ -16,16 +16,15 @@
 </style>
 </head>
 <body>
-  <h1>PAPER TITLE test</h1>
+  <h1>Retiming Robot Demonstrations with a Learned Speed Prior</h1>
   <div class="authors">Anonymous Authors</div>
   <div class="venue">Under review as a conference paper at ICLR 2027</div>
 
-  <!-- 대표 그림: teaser.png를 같은 폴더에 올리세요 -->
   <img src="teaser.png" alt="Overview">
   <p class="caption">Figure 1. Overview of our method.</p>
 
   <h2>Abstract</h2>
-  <p>PASTE ABSTRACT HERE.</p>
+  <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction and a motion path, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in \qty{3.43}{s}, 1.65$\times$ faster than baseline's \qty{5.67}{s} while succeeding in all 30 trials. Videos and further material are available at \url{https://anonymous.4open.science/w/anony_repo-882B/}.</p>
 
   <h2>Results</h2>
   <p>Additional qualitative results and videos will be provided here.</p>
