@@ -87,6 +87,54 @@ section { padding: 28px 0; }
 }
 .lead strong { color: var(--text); font-weight: 600; }
 
+/* real-time callout: same dark pill + red dot as the badge burned into the videos */
+.realtime {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0 auto 12px;
+  text-align: center;
+}
+
+.rt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 16px 7px 14px;
+  border-radius: 999px;
+  background: #1f2328;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rt-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: rt-pulse 1.6s ease-out infinite;
+}
+
+@keyframes rt-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+  70%  { box-shadow: 0 0 0 7px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-dot { animation: none; }
+}
+
+.rt-text { font-size: 1.08rem; text-wrap: balance; }
+.rt-text strong { font-weight: 600; }
+.nowrap, .rt-text strong { white-space: nowrap; }
+
 /* ---------- demo videos ---------- */
 .demo { margin: 0 0 40px; }
 .demo:last-child { margin-bottom: 8px; }
@@ -174,6 +222,7 @@ footer a { color: inherit; text-decoration: underline; }
   body { font-size: 16px; }
   .hero { padding: 36px 0 18px; }
   .title br { display: none; }
+  .hide-sm { display: none; }
   .authors { font-size: 1.05rem; }
   section { padding: 20px 0; }
   .section-title { font-size: 1.35rem; }

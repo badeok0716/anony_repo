@@ -3,7 +3,8 @@
 
 Both clips play at 1x. Each panel gets an elapsed-time timer. The clip that
 finishes first freezes on its last frame and shows "Done (X.Xs)" until the
-other one ends. All metadata, audio and data streams are dropped.
+other one ends. A "1x REAL-TIME - NOT SPED UP" badge sits in the footer.
+All metadata, audio and data streams are dropped.
 
 Text is rendered through the libass `ass` filter, so this works with ffmpeg
 builds that lack `drawtext`.
@@ -25,6 +26,10 @@ GAP = 12  # white gutter between the two panels, px
 
 def run(cmd):
     return subprocess.run(cmd, capture_output=True, text=True)
+
+
+def run_bytes(cmd):
+    return subprocess.run(cmd, capture_output=True, check=True).stdout
 
 
 def probe(ffmpeg, path):
@@ -52,11 +57,44 @@ def ass_color(hex_rgb, alpha=0):
     return f"&H{alpha:02X}{b}{g}{r}&".upper()
 
 
-def build_ass(W, H, panels, label_h, footer_h, total, unit):
+REALTIME_TEXT = "1\u00d7 REAL-TIME \u00b7 NOT SPED UP"
+
+
+def ink_extent(ffmpeg, fonts_dir, style, text):
+    """Render `text` once with libass and return (left offset, width) of the drawn pixels
+    relative to its \\pos anchor, so boxes can be fitted to what is actually drawn."""
+    W, H, x0 = 3000, 300, 20
+    tmp = tempfile.mkdtemp()
+    path = os.path.join(tmp, "measure.ass")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("\n".join([
+            "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {W}", f"PlayResY: {H}", "",
+            "[V4+ Styles]",
+            "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, "
+            "Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, "
+            "Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
+            style, "", "[Events]",
+            "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",
+            f"Dialogue: 0,0:00:00.00,0:00:01.00,{style.split(',')[0].split(': ')[1]},,0,0,0,,"
+            f"{{\\pos({x0},{H // 2})}}{text}", ""]))
+    raw = run_bytes([ffmpeg, "-v", "error", "-f", "lavfi", "-i", f"color=black:s={W}x{H}:d=1",
+                     "-vf", f"ass={path}:fontsdir={fonts_dir},format=gray", "-frames:v", "1",
+                     "-f", "rawvideo", "-"])
+    cols = [x for x in range(W) if any(raw[y * W + x] > 60 for y in range(0, H, 2))]
+    return cols[0] - x0, cols[-1] - cols[0] + 1
+
+
+def circle(r):
+    k = 0.5523 * r
+    return (f"m {r} 0 b {r + k} 0 {2 * r} {r - k} {2 * r} {r} b {2 * r} {r + k} {r + k} {2 * r} {r} {2 * r} "
+            f"b {r - k} {2 * r} 0 {r + k} 0 {r} b 0 {r - k} {r - k} 0 {r} 0")
+
+
+def build_ass(W, H, panels, label_h, footer_h, total, unit, fonts_dir, ffmpeg):
     """panels: list of dicts with x, w, label, color, dur, finishes_first.
     unit: text size reference in px (panel height x text scale)."""
     fs_label = round(unit * 0.062)
-    fs_footer = round(unit * 0.042)
+    fs_footer = round(unit * 0.048)
     fs_timer = round(unit * 0.050)
     # keep the widest badge ("Done (XX.Xs)") inside the narrowest panel
     min_w = min(p["w"] for p in panels)
@@ -65,6 +103,8 @@ def build_ass(W, H, panels, label_h, footer_h, total, unit):
     box_h = round(fs_timer * 1.5)
     inset = round(unit * 0.025)
 
+    badge_style = (f"Style: Badge,Lato,{fs_footer},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,"
+                   f"100,100,{max(1, round(fs_footer * 0.06))},0,1,0,0,4,0,0,0,1")
     lines = [
         "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {W}", f"PlayResY: {H}",
         "WrapStyle: 2", "ScaledBorderAndShadow: yes", "",
@@ -73,7 +113,7 @@ def build_ass(W, H, panels, label_h, footer_h, total, unit):
         "Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, "
         "Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
         f"Style: Label,Lato,{fs_label},&H00222222,&H00222222,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1",
-        f"Style: Footer,Lato,{fs_footer},&H00666666,&H00666666,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,0,0,0,1",
+        badge_style,
         f"Style: Timer,DejaVu Sans Mono,{fs_timer},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,4,0,0,0,1",
         f"Style: Box,Lato,10,&H00000000,&H00000000,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,7,0,0,0,1",
         "", "[Events]",
@@ -83,7 +123,17 @@ def build_ass(W, H, panels, label_h, footer_h, total, unit):
     def ev(layer, t0, t1, style, text):
         lines.append(f"Dialogue: {layer},{ass_time(t0)},{ass_time(t1)},{style},,0,0,0,,{text}")
 
-    ev(0, 0, total, "Footer", f"{{\\pos({W // 2},{H - footer_h // 2})}}Real-time playback")
+    # "1x real-time" badge: dark pill with a red dot, centred in the footer strip
+    ink_dx, tw = ink_extent(ffmpeg, fonts_dir, badge_style, REALTIME_TEXT)
+    pill_h = round(fs_footer * 1.45)
+    r_dot = round(fs_footer * 0.22)
+    bpad, gap = round(fs_footer * 0.62), round(fs_footer * 0.38)
+    pill_w = round(bpad + 2 * r_dot + gap + tw + bpad)
+    px, py = (W - pill_w) // 2, H - footer_h + (footer_h - pill_h) // 2
+    cy = py + pill_h // 2
+    ev(0, 0, total, "Box", f"{{\\pos({px},{py})\\p1\\1c{ass_color('1F2328')}}}{rounded_rect(pill_w, pill_h, pill_h // 2)}")
+    ev(1, 0, total, "Box", f"{{\\pos({px + bpad},{cy - r_dot})\\p1\\1c{ass_color('EF4444')}}}{circle(r_dot)}")
+    ev(1, 0, total, "Badge", f"{{\\pos({px + bpad + 2 * r_dot + gap - ink_dx},{cy})}}{REALTIME_TEXT}")
     for p in panels:
         cx = p["x"] + p["w"] // 2
         ev(0, 0, total, "Label", f"{{\\pos({cx},{label_h // 2})\\1c{ass_color(p['color'])}}}{p['label']}")
@@ -148,7 +198,7 @@ def main():
 
     H = a.height
     unit = H * a.text_scale
-    label_h, footer_h = round(unit * 0.11), round(unit * 0.075)
+    label_h, footer_h = round(unit * 0.11), round(unit * 0.105)
 
     # panel widths after scaling to a common height (even, as scale=-2 does)
     widths = []
@@ -170,8 +220,8 @@ def main():
 
     tmp = tempfile.mkdtemp()
     ass_path = os.path.join(tmp, "overlay.ass")
-    with open(ass_path, "w") as f:
-        f.write(build_ass(W, Htot, panels, label_h, footer_h, total, unit))
+    with open(ass_path, "w", encoding="utf-8") as f:
+        f.write(build_ass(W, Htot, panels, label_h, footer_h, total, unit, a.fonts_dir, a.ffmpeg))
 
     tonemap = ("zscale=t=linear:npl=203,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,"
                "zscale=t=bt709:m=bt709:r=tv,")
