@@ -112,10 +112,9 @@ section { padding: 28px 0; }
   height: auto;
 }
 
-/* intrinsic widths keep each clip at roughly its native scale */
-.video-frame.cup   { max-width: 600px; }
-.video-frame.towel { max-width: 600px; }
-.video-frame.trash { max-width: var(--wide); }
+/* side-by-side portrait clips share one width so their scale matches; wide clips use the full column */
+.video-frame.portrait { max-width: 600px; }
+.video-frame.wide     { max-width: var(--wide); }
 
 .demo-caption {
   margin: 10px auto 0;
