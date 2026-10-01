@@ -118,6 +118,11 @@ def main():
     ap.add_argument("--ours", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--poster", help="optional JPEG poster (first frame)")
+    for side in ("baseline", "ours"):
+        ap.add_argument(f"--trim-{side}", default="", metavar="START:END",
+                        help="keep only this span in seconds, e.g. 2.1:10.7 or 2.1: (to the end)")
+        ap.add_argument(f"--crop-{side}", default="", metavar="W:H:X:Y",
+                        help="ffmpeg crop applied before scaling, in upright source pixels")
     ap.add_argument("--height", type=int, default=540, help="panel height in px")
     ap.add_argument("--text-scale", type=float, default=1.0,
                     help="scale overlay text; raise it for wide videos that are shown downscaled")
@@ -130,7 +135,14 @@ def main():
 
     clips = [("Baseline", a.baseline, "555555"), ("Ours", a.ours, "1D4ED8")]
     info = [probe(a.ffmpeg, path) for _, path, _ in clips]
-    durs = [d for d, _ in info]
+    trims, crops = [a.trim_baseline, a.trim_ours], [a.crop_baseline, a.crop_ours]
+    spans = []
+    for (full, _), t in zip(info, trims):
+        start, _, end = t.partition(":")
+        start = float(start or 0)
+        end = min(float(end), full) if end else full
+        spans.append((start, end))
+    durs = [end - start for start, end in spans]
     total = max(durs) + a.hold_end
     first = durs.index(min(durs))
 
@@ -140,9 +152,10 @@ def main():
 
     # panel widths after scaling to a common height (even, as scale=-2 does)
     widths = []
-    for _, path, _ in clips:
+    for (_, path, _), crop in zip(clips, crops):
+        vf = (f"crop={crop}," if crop else "") + f"scale=-2:{H}"
         out = run([a.ffmpeg, "-hide_banner", "-v", "verbose", "-i", path, "-frames:v", "1",
-                   "-vf", f"scale=-2:{H}", "-f", "null", "-"]).stderr
+                   "-vf", vf, "-f", "null", "-"]).stderr
         w = int(re.findall(r"-> w:(\d+) h:\d+", out)[-1])
         widths.append(w)
     W = widths[0] + GAP + widths[1]
@@ -164,7 +177,9 @@ def main():
                "zscale=t=bt709:m=bt709:r=tv,")
     chains = []
     for i, (_, hdr) in enumerate(info):
-        pre = tonemap if hdr else ""
+        pre = f"trim=start={spans[i][0]:.3f}:end={spans[i][1]:.3f},setpts=PTS-STARTPTS,"
+        pre += tonemap if hdr else ""
+        pre += f"crop={crops[i]}," if crops[i] else ""
         chains.append(
             f"[{i}:v:0]{pre}fps={FPS},scale=-2:{H}:flags=lanczos:out_color_matrix=bt709:out_range=tv,"
             f"setsar=1,format=yuv420p,tpad=stop_mode=clone:stop_duration={total - durs[i] + 0.5:.3f}[v{i}]")
@@ -198,7 +213,8 @@ def main():
             raise SystemExit(r.stderr)
 
     print(f"{a.out}: {W}x{Htot}, {total:.2f}s, {size_mb:.2f} MB | "
-          f"baseline {durs[0]:.2f}s, ours {durs[1]:.2f}s")
+          f"baseline {durs[0]:.2f}s ({spans[0][0]:.2f}-{spans[0][1]:.2f}), "
+          f"ours {durs[1]:.2f}s ({spans[1][0]:.2f}-{spans[1][1]:.2f})")
 
 
 if __name__ == "__main__":

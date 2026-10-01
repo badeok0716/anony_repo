@@ -114,7 +114,7 @@ section { padding: 28px 0; }
 
 /* intrinsic widths keep each clip at roughly its native scale */
 .video-frame.cup   { max-width: 600px; }
-.video-frame.towel { max-width: 900px; }
+.video-frame.towel { max-width: 600px; }
 .video-frame.trash { max-width: var(--wide); }
 
 .demo-caption {
