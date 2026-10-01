@@ -1,0 +1,194 @@
+:root {
+  --text: #1f2328;
+  --muted: #59636e;
+  --faint: #8c959f;
+  --rule: #e5e7eb;
+  --bg: #ffffff;
+  --panel: #f6f8fa;
+  --accent: #1d4ed8;
+  --wide: 1040px;
+  --narrow: 820px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { max-width: var(--wide); margin: 0 auto; padding: 0 16px; }
+.container.narrow { max-width: var(--narrow); }
+
+/* ---------- header ---------- */
+.hero { text-align: center; padding: 56px 0 28px; }
+
+.title {
+  margin: 0 auto;
+  max-width: 900px;
+  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.authors { margin: 18px 0 2px; font-size: 1.15rem; }
+.venue { margin: 0; color: var(--muted); font-size: 0.98rem; text-wrap: balance; }
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: #363636;
+  color: #fff;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+.button:hover { background: #1f1f1f; text-decoration: none; }
+.button svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* ---------- sections ---------- */
+section { padding: 28px 0; }
+
+.section-title {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.lead {
+  margin: 0 auto 26px;
+  max-width: var(--narrow);
+  text-align: center;
+  color: var(--muted);
+  text-wrap: balance;
+}
+.lead strong { color: var(--text); font-weight: 600; }
+
+/* ---------- demo videos ---------- */
+.demo { margin: 0 0 40px; }
+.demo:last-child { margin-bottom: 8px; }
+
+.demo-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.video-frame {
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--panel);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.video-frame video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* intrinsic widths keep each clip at roughly its native scale */
+.video-frame.cup   { max-width: 600px; }
+.video-frame.towel { max-width: 900px; }
+.video-frame.trash { max-width: var(--wide); }
+
+.demo-caption {
+  margin: 10px auto 0;
+  max-width: var(--narrow);
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.demo-caption a { margin-left: 4px; white-space: nowrap; }
+.demo-caption a::after { content: " \2197"; }
+
+/* ---------- abstract ---------- */
+.abstract p {
+  margin: 0;
+  text-align: justify;
+  hyphens: auto;
+}
+.abstract a { overflow-wrap: anywhere; }
+
+/* ---------- method figures ---------- */
+.figure { margin: 0 0 36px; }
+.figure:last-child { margin-bottom: 0; }
+
+.figure-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.figure figcaption {
+  margin: 12px auto 0;
+  max-width: var(--narrow);
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-wrap: balance;
+}
+.figure figcaption strong { color: var(--text); font-weight: 600; }
+
+.scroll-hint { display: none; }
+
+/* ---------- footer ---------- */
+footer {
+  margin-top: 36px;
+  padding: 28px 0 40px;
+  border-top: 1px solid var(--rule);
+  text-align: center;
+  color: var(--faint);
+  font-size: 0.85rem;
+}
+footer a { color: inherit; text-decoration: underline; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .hero { padding: 36px 0 18px; }
+  .title br { display: none; }
+  .authors { font-size: 1.05rem; }
+  section { padding: 20px 0; }
+  .section-title { font-size: 1.35rem; }
+  .demo { margin-bottom: 30px; }
+  .video-frame { border-radius: 8px; }
+  .abstract p { text-align: left; hyphens: manual; }
+
+  /* the method figures are very wide: let them scroll instead of shrinking to unreadable */
+  .figure-scroll img { width: 760px; max-width: none; }
+  .scroll-hint {
+    display: block;
+    margin-top: 6px;
+    text-align: center;
+    color: var(--faint);
+    font-size: 0.8rem;
+  }
+}
