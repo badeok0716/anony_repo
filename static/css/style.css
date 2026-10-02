@@ -139,6 +139,21 @@ section { padding: 28px 0; }
 .demo { margin: 0 0 40px; }
 .demo:last-child { margin-bottom: 8px; }
 
+/* demo groups (fine-tuned vs zero-shot) */
+.group-head {
+  margin: 6px auto 24px;
+  max-width: var(--narrow);
+  text-align: center;
+}
+.group-head.sep {
+  margin-top: 56px;
+  padding-top: 34px;
+  border-top: 1px solid var(--rule);
+}
+.group-title { margin: 0 0 4px; font-size: 1.32rem; font-weight: 600; }
+.group-note { margin: 0; color: var(--muted); font-size: 0.95rem; text-wrap: balance; }
+.group-note strong { color: var(--text); font-weight: 600; }
+
 .demo-title {
   margin: 0 0 10px;
   text-align: center;

@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
-<link rel="stylesheet" href="static/css/style.css?v=bc8289a3">
+<link rel="stylesheet" href="static/css/style.css?v=d8124012">
 </head>
 <body>
 
@@ -35,12 +35,15 @@
         <span class="rt-badge"><span class="rt-dot" aria-hidden="true"></span>1&times; real-time</span>
         <span class="rt-text"><span class="nowrap">Every video plays at actual speed.</span> <strong>Nothing is sped up.</strong></span>
       </div>
-      <p class="lead">Real-robot rollouts, side by side.
-        <strong>Baseline</strong>: DROID joint-position policy fine-tuned to predict measured joint positions, tracked by a PD controller.
-        <strong>Ours</strong>: our policy with our controller.</p>
+      <p class="lead">Real-robot rollouts, side by side. <strong>Ours</strong>: our policy with our controller.</p>
+
+      <div class="group-head">
+        <h2 class="group-title">Fine-tuned</h2>
+        <p class="group-note"><strong>Baseline</strong>: DROID joint-position policy fine-tuned to predict measured joint positions, tracked by a PD controller.</p>
+      </div>
 
       <figure class="demo">
-        <h2 class="demo-title">Cup stacking</h2>
+        <h3 class="demo-title">Cup stacking</h3>
         <div class="video-frame portrait">
           <video src="static/videos/cup.mp4?v=b3b6ad9f" poster="static/videos/cup.jpg?v=91fe0be9" width="824" height="860"
                  autoplay muted loop playsinline preload="auto"
@@ -50,7 +53,7 @@
       </figure>
 
       <figure class="demo">
-        <h2 class="demo-title">Towel folding</h2>
+        <h3 class="demo-title">Towel folding</h3>
         <div class="video-frame portrait">
           <video src="static/videos/towel.mp4?v=3f0cbf29" poster="static/videos/towel.jpg?v=a54ce4ca" width="824" height="860"
                  autoplay muted loop playsinline preload="metadata"
@@ -60,13 +63,28 @@
       </figure>
 
       <figure class="demo">
-        <h2 class="demo-title">Trash cleanup</h2>
+        <h3 class="demo-title">Trash cleanup</h3>
         <div class="video-frame wide">
           <video src="static/videos/trash.mp4?v=01dba002" poster="static/videos/trash.jpg?v=89f1ec00" width="1932" height="726"
                  autoplay muted loop playsinline preload="metadata"
                  aria-label="Trash cleanup, baseline versus ours, real-time playback"></video>
         </div>
         <figcaption class="demo-caption">Put the paper balls on the table into the bin. <a href="static/videos/trash.mp4?v=01dba002">Open video</a></figcaption>
+      </figure>
+
+      <div class="group-head sep">
+        <h2 class="group-title">Zero-shot</h2>
+        <p class="group-note">No task-specific fine-tuning. <strong>Baseline</strong>: the public DROID joint-position policy, tracked by a PD controller.</p>
+      </div>
+
+      <figure class="demo">
+        <h3 class="demo-title">Banana pick-and-place</h3>
+        <div class="video-frame wide">
+          <video src="static/videos/banana.mp4?v=acf38356" poster="static/videos/banana.jpg?v=cbada0fb" width="1932" height="726"
+                 autoplay muted loop playsinline preload="metadata"
+                 aria-label="Banana pick-and-place, zero-shot, baseline versus ours, real-time playback"></video>
+        </div>
+        <figcaption class="demo-caption">Put both bananas into the bin. <a href="static/videos/banana.mp4?v=acf38356">Open video</a></figcaption>
       </figure>
     </div>
   </section>
