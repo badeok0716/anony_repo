@@ -33,58 +33,72 @@
     <div class="container">
       <div class="realtime">
         <span class="rt-badge"><span class="rt-dot" aria-hidden="true"></span>1&times; real-time</span>
-        <span class="rt-text"><span class="nowrap">Every video plays at actual speed.</span> <strong>Nothing is sped up.</strong></span>
+        <span class="rt-text"><span class="nowrap">Every video plays at actual speed.</span> <strong>Playback is not sped up.</strong></span>
       </div>
-      <p class="lead">Real-robot rollouts, side by side. <strong>Ours</strong>: our policy with our controller.</p>
+      <p class="lead">Real-robot rollouts, side by side. <strong>Ours</strong>: π<sub>0.5</sub>-DROID fine-tuned on demonstrations
+retimed by our speed prior, executed by our pace-aware controller.
+<strong>Baseline</strong>: π<sub>0.5</sub>-DROID fine-tuned on the original demonstration timing, executed with standard PD position control.
+The two differ in both training timing and controller; Table&nbsp;2 of the paper separates the two effects.</p>
+
+<div class="group-head">
+<h2 class="group-title">Fine-tuned on handheld demonstrations</h2>
+<p class="group-note">Both policies are fine-tuned on the same handheld demonstrations of each task.</p>
+</div>
+      <!-- <p class="lead">Real-robot rollouts, side by side. <strong>Ours</strong>: our policy with our controller.</p>
 
       <div class="group-head">
         <h2 class="group-title">Fine-tuned</h2>
         <p class="group-note"><strong>Baseline</strong>: DROID joint-position policy fine-tuned to predict measured joint positions, tracked by a PD controller.</p>
-      </div>
+      </div> -->
 
       <figure class="demo">
-        <h3 class="demo-title">Cup stacking</h3>
+        <h3 class="demo-title">Stacking cups</h3>
         <div class="video-frame portrait">
           <video src="static/videos/cup.mp4?v=b3b6ad9f" poster="static/videos/cup.jpg?v=91fe0be9" width="824" height="860"
                  autoplay muted loop playsinline preload="auto"
-                 aria-label="Cup stacking, baseline versus ours, real-time playback"></video>
+                 aria-label="Stacking cups, baseline versus ours, real-time playback"></video>
         </div>
         <figcaption class="demo-caption">Stack three cups into a pyramid. <a href="static/videos/cup.mp4?v=b3b6ad9f">Open video</a></figcaption>
       </figure>
 
       <figure class="demo">
-        <h3 class="demo-title">Towel folding</h3>
+        <h3 class="demo-title">Folding towel</h3>
         <div class="video-frame portrait">
           <video src="static/videos/towel.mp4?v=3f0cbf29" poster="static/videos/towel.jpg?v=a54ce4ca" width="824" height="860"
                  autoplay muted loop playsinline preload="metadata"
-                 aria-label="Towel folding, baseline versus ours, real-time playback"></video>
+                 aria-label="Folding towel, baseline versus ours, real-time playback"></video>
         </div>
         <figcaption class="demo-caption">Fold the towel on the table. <a href="static/videos/towel.mp4?v=3f0cbf29">Open video</a></figcaption>
       </figure>
 
       <figure class="demo">
-        <h3 class="demo-title">Trash cleanup</h3>
+        <h3 class="demo-title">Cleaning trash</h3>
         <div class="video-frame wide">
           <video src="static/videos/trash.mp4?v=01dba002" poster="static/videos/trash.jpg?v=89f1ec00" width="1932" height="726"
                  autoplay muted loop playsinline preload="metadata"
-                 aria-label="Trash cleanup, baseline versus ours, real-time playback"></video>
+                 aria-label="Cleaning trash, baseline versus ours, real-time playback"></video>
         </div>
         <figcaption class="demo-caption">Put the paper balls on the table into the bin. <a href="static/videos/trash.mp4?v=01dba002">Open video</a></figcaption>
       </figure>
 
       <div class="group-head sep">
-        <h2 class="group-title">Zero-shot</h2>
+        <!-- <h2 class="group-title">Zero-shot</h2>
         <p class="group-note">No task-specific fine-tuning. <strong>Baseline</strong>: the public DROID joint-position policy, tracked by a PD controller.</p>
-      </div>
+      </div> -->
+      <h2 class="group-title">Zero-shot</h2>
+        <p class="group-note">Both policies are trained on DROID only, with no demonstrations of this task;
+        ours retimes DROID to the handheld pace of FastUMI-100K and runs on its 0.9 tempo channel.</p>
+        </div>
+
 
       <figure class="demo">
-        <h3 class="demo-title">Banana pick-and-place</h3>
+        <h3 class="demo-title">Placing bananas</h3>
         <div class="video-frame wide">
           <video src="static/videos/banana.mp4?v=acf38356" poster="static/videos/banana.jpg?v=cbada0fb" width="1932" height="726"
                  autoplay muted loop playsinline preload="metadata"
                  aria-label="Banana pick-and-place, zero-shot, baseline versus ours, real-time playback"></video>
         </div>
-        <figcaption class="demo-caption">Put both bananas into the bin. <a href="static/videos/banana.mp4?v=acf38356">Open video</a></figcaption>
+        <figcaption class="demo-caption">Put both bananas into the tray. <a href="static/videos/banana.mp4?v=acf38356">Open video</a></figcaption>
       </figure>
     </div>
   </section>
@@ -92,7 +106,7 @@
   <section id="abstract" class="abstract">
     <div class="container narrow">
       <h2 class="section-title">Abstract</h2>
-      <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction and a motion path, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in 3.43&nbsp;s, 1.65&times; faster than baseline's 5.67&nbsp;s while succeeding in all 30 trials. Videos and further material are available at <a href="https://anonymous.4open.science/w/anony_repo-882B/">https://anonymous.4open.science/w/anony_repo-882B/</a>.</p>
+      <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction and a motion path, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in 3.43&nbsp;s, 1.65&times; faster than baseline's 5.67&nbsp;s while succeeding in all 30 trials.</p>
     </div>
   </section>
 
@@ -117,8 +131,7 @@
         </div>
         <p class="scroll-hint">Swipe to see the whole figure, or tap to enlarge.</p>
         <figcaption><strong>One execution cycle.</strong> The policy predicts an action chunk and its pace; the solver drafts a path at that pace,
-          splices it into the running plan where it arrives on time, and smooths it within robot limits.</figcaption>
-      </figure>
+          joins it to the running plan at the earliest point it can reach on time, and smooths it within robot limits.</figcaption>      </figure>
     </div>
   </section>
 </main>
