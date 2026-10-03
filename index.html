@@ -4,32 +4,130 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>PAPER TITLE</title>
-<style>
-  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; max-width: 860px; margin: 0 auto; padding: 40px 16px; line-height: 1.6; color: #222; background: #fff; }
-  h1 { text-align: center; font-size: 2rem; margin-bottom: 0.3em; }
-  .authors { text-align: center; color: #555; margin-bottom: 0.2em; }
-  .venue { text-align: center; color: #888; margin-bottom: 2em; }
-  h2 { border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-top: 2em; }
-  img, video { max-width: 100%; display: block; margin: 1em auto; }
-  .caption { text-align: center; font-size: 0.9em; color: #666; }
-</style>
+<meta name="color-scheme" content="light">
+<meta name="description" content="Retiming Robot Demonstrations with a Learned Speed Prior: real-robot comparison videos, abstract and method overview.">
+<title>Retiming Robot Demonstrations with a Learned Speed Prior</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%231d4ed8'/%3E%3Cpath d='M6 4.5v7l5.5-3.5z' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="static/css/style.css?v=d8124012">
 </head>
 <body>
-  <h1>Retiming Robot Demonstrations with a Learned Speed Prior</h1>
-  <div class="authors">Anonymous Authors</div>
-  <div class="venue">Under review as a conference paper at ICLR 2027</div>
 
-  <img src="teaser.png" alt="Overview">
-  <p class="caption">Figure 1. Overview of our method.</p>
+<header class="hero">
+  <div class="container">
+    <h1 class="title">Retiming Robot Demonstrations <br>with a Learned Speed Prior</h1>
+    <p class="authors">Anonymous Authors</p>
+    <p class="venue">Under review as a conference paper at ICLR 2027</p>
+    <nav class="links" aria-label="Sections">
+      <a class="button" href="#demos"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><span class="hide-sm">Real-time</span>Videos</a>
+      <a class="button" href="#abstract"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h7l3 3v10H3zm2 5v1h6v-1zm0 2.5v1h6V9zm0 2.5v1h4v-1z"/></svg>Abstract</a>
+      <a class="button" href="#method"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 5h4v6H1zm5 2h4v2H6zm5-2h4v6h-4z"/></svg>Method</a>
+    </nav>
+  </div>
+</header>
 
-  <h2>Abstract</h2>
-  <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction and a motion path, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in \qty{3.43}{s}, 1.65$\times$ faster than baseline's \qty{5.67}{s} while succeeding in all 30 trials. Videos and further material are available at \url{https://anonymous.4open.science/w/anony_repo-882B/}.</p>
+<main>
+  <section id="demos">
+    <div class="container">
+      <div class="realtime">
+        <span class="rt-badge"><span class="rt-dot" aria-hidden="true"></span>1&times; real-time</span>
+        <span class="rt-text"><span class="nowrap">Every video plays at actual speed.</span> <strong>Nothing is sped up.</strong></span>
+      </div>
+      <p class="lead">Real-robot rollouts, side by side. <strong>Ours</strong>: our policy with our controller.</p>
 
-  <h2>Results</h2>
-  <p>Additional qualitative results and videos will be provided here.</p>
-  <!-- 영상 예시 (mp4 메타데이터 제거 후 사용):
-  <video src="demo.mp4" controls muted playsinline></video>
-  -->
+      <div class="group-head">
+        <h2 class="group-title">Fine-tuned</h2>
+        <p class="group-note"><strong>Baseline</strong>: DROID joint-position policy fine-tuned to predict measured joint positions, tracked by a PD controller.</p>
+      </div>
+
+      <figure class="demo">
+        <h3 class="demo-title">Cup stacking</h3>
+        <div class="video-frame portrait">
+          <video src="static/videos/cup.mp4?v=b3b6ad9f" poster="static/videos/cup.jpg?v=91fe0be9" width="824" height="860"
+                 autoplay muted loop playsinline preload="auto"
+                 aria-label="Cup stacking, baseline versus ours, real-time playback"></video>
+        </div>
+        <figcaption class="demo-caption">Stack three cups into a pyramid. <a href="static/videos/cup.mp4?v=b3b6ad9f">Open video</a></figcaption>
+      </figure>
+
+      <figure class="demo">
+        <h3 class="demo-title">Towel folding</h3>
+        <div class="video-frame portrait">
+          <video src="static/videos/towel.mp4?v=3f0cbf29" poster="static/videos/towel.jpg?v=a54ce4ca" width="824" height="860"
+                 autoplay muted loop playsinline preload="metadata"
+                 aria-label="Towel folding, baseline versus ours, real-time playback"></video>
+        </div>
+        <figcaption class="demo-caption">Fold the towel on the table. <a href="static/videos/towel.mp4?v=3f0cbf29">Open video</a></figcaption>
+      </figure>
+
+      <figure class="demo">
+        <h3 class="demo-title">Trash cleanup</h3>
+        <div class="video-frame wide">
+          <video src="static/videos/trash.mp4?v=01dba002" poster="static/videos/trash.jpg?v=89f1ec00" width="1932" height="726"
+                 autoplay muted loop playsinline preload="metadata"
+                 aria-label="Trash cleanup, baseline versus ours, real-time playback"></video>
+        </div>
+        <figcaption class="demo-caption">Put the paper balls on the table into the bin. <a href="static/videos/trash.mp4?v=01dba002">Open video</a></figcaption>
+      </figure>
+
+      <div class="group-head sep">
+        <h2 class="group-title">Zero-shot</h2>
+        <p class="group-note">No task-specific fine-tuning. <strong>Baseline</strong>: the public DROID joint-position policy, tracked by a PD controller.</p>
+      </div>
+
+      <figure class="demo">
+        <h3 class="demo-title">Banana pick-and-place</h3>
+        <div class="video-frame wide">
+          <video src="static/videos/banana.mp4?v=acf38356" poster="static/videos/banana.jpg?v=cbada0fb" width="1932" height="726"
+                 autoplay muted loop playsinline preload="metadata"
+                 aria-label="Banana pick-and-place, zero-shot, baseline versus ours, real-time playback"></video>
+        </div>
+        <figcaption class="demo-caption">Put both bananas into the bin. <a href="static/videos/banana.mp4?v=acf38356">Open video</a></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="abstract" class="abstract">
+    <div class="container narrow">
+      <h2 class="section-title">Abstract</h2>
+      <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction and a motion path, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in 3.43&nbsp;s, 1.65&times; faster than baseline's 5.67&nbsp;s while succeeding in all 30 trials. Videos and further material are available at <a href="https://anonymous.4open.science/w/anony_repo-882B/">https://anonymous.4open.science/w/anony_repo-882B/</a>.</p>
+    </div>
+  </section>
+
+  <section id="method">
+    <div class="container">
+      <h2 class="section-title">Method</h2>
+
+      <figure class="figure">
+        <div class="figure-scroll">
+          <a href="static/figures/pace.svg?v=fd0761dd"><img src="static/figures/pace.svg?v=fd0761dd" width="524" height="162"
+             alt="Speed prior pipeline: path windows, speed prior, speed along the path, and clock"></a>
+        </div>
+        <p class="scroll-hint">Swipe to see the whole figure, or tap to enlarge.</p>
+        <figcaption><strong>Learning the pace.</strong> A speed prior predicts the distribution of speed along a demonstration path;
+          integrating a chosen quantile gives the clock used to retime the demonstration.</figcaption>
+      </figure>
+
+      <figure class="figure">
+        <div class="figure-scroll">
+          <a href="static/figures/solver.svg?v=a9652eb3"><img src="static/figures/solver.svg?v=a9652eb3" width="524" height="144"
+             alt="One execution cycle: tempo policy, then the solver's draft, splice and smooth steps"></a>
+        </div>
+        <p class="scroll-hint">Swipe to see the whole figure, or tap to enlarge.</p>
+        <figcaption><strong>One execution cycle.</strong> The policy predicts an action chunk and its pace; the solver drafts a path at that pace,
+          splices it into the running plan where it arrives on time, and smooths it within robot limits.</figcaption>
+      </figure>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    Anonymous project page for double-blind review. Layout inspired by <a href="https://nerfies.github.io/">Nerfies</a>.
+  </div>
+</footer>
+
 </body>
 </html>
