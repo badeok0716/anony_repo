@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124012">
+<link rel="stylesheet" href="static/css/tempo.css?v=2">
+<script src="static/js/tempo.js?v=2" defer></script>
 </head>
 <body>
 
@@ -21,7 +23,7 @@
     <p class="authors">Anonymous Authors</p>
     <p class="venue">Under review as a conference paper at ICLR 2027</p>
     <nav class="links" aria-label="Sections">
-      <a class="button" href="tempo.html">Interactive tempo demo</a>
+      <a class="button" href="#inference-time">Inference-time tempo</a>
       <a class="button" href="#demos"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><span class="hide-sm">Real-time</span>Videos</a>
       <a class="button" href="#abstract"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h7l3 3v10H3zm2 5v1h6v-1zm0 2.5v1h6V9zm0 2.5v1h4v-1z"/></svg>Abstract</a>
       <a class="button" href="#method"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 5h4v6H1zm5 2h4v2H6zm5-2h4v6h-4z"/></svg>Method</a>
@@ -122,6 +124,27 @@
       </figure>
     </div>
   </section>
+<section id="inference-time" class="tempo-explorer"><div class="container">
+<h2 class="section-title">Control the pace at inference time</h2>
+<p class="lead">The same motion can follow different clocks. Explore applied tempo in real footage, then choose a channel for a fixed action chunk.</p>
+<nav class="tasks" aria-label="Choose a task"><button data-task="cup" aria-pressed="true">Cup stacking <span>q99</span></button><button data-task="towel" aria-pressed="false">Towel folding <span>q95</span></button><button data-task="trash" aria-pressed="false">Trash cleanup <span>q99</span></button></nav>
+<div class="workspace"><section class="comparison" aria-label="Synchronized comparison"><div class="video-labels"><div><i class="cyan"></i> Fixed 15 Hz clock <small>Reconstructed from the same footage</small></div><div><i class="gold"></i> Ours <small>Recorded execution · real time</small></div></div>
+<div class="video-stage"><video id="motion" controls playsinline muted preload="metadata" aria-label="Reconstructed fixed clock on the left, recorded execution on the right"></video><canvas id="ghost-trail" aria-hidden="true"></canvas></div>
+<div class="transport"><button id="replay">↺ Replay</button><a id="download" href="#" download>Download split video ↗</a><label class="trail-toggle"><input id="trail-enabled" type="checkbox"> Gripper trail · pilot</label><span id="clock">0.00 s</span></div></section>
+<aside class="instrument" aria-label="Applied tempo speedometer"><p class="eyebrow">LIVE APPLIED TEMPO</p>
+<svg id="gauge" viewBox="0 0 320 230" role="img" aria-label="Speedometer relative to a fixed 15 Hz action clock"><path class="track" d="M 45.35 170.73 A 122 122 0 1 1 274.65 170.73"/><g id="ticks"></g><g id="needle"><path d="M155 130 L160 21 L165 130 Z"/><circle cx="160" cy="129" r="9"/></g><text id="rate" x="160" y="195" text-anchor="middle">—</text><text class="unit" x="160" y="220" text-anchor="middle">× FIXED-CLOCK PACE</text></svg>
+<p id="state" class="state" role="status">Loading telemetry…</p><div class="stats"><div><span>Ours finishes</span><strong id="done">—</strong></div><div><span>Fixed clock finishes</span><strong id="fixed">—</strong></div><div><span>Average speedup</span><strong id="average">—</strong></div></div>
+<div class="sound"><button id="sound" aria-pressed="false">Enable tempo sound</button><label for="volume">Volume <input id="volume" type="range" min="0" max="100" value="20"></label><p>F1 engine recording, pitch-linked to tempo. Added sound effect, not robot audio. <a href="static/audio/ATTRIBUTION.md">Source / CC0</a>.</p></div></aside></div>
+<section class="timeline"><div class="timeline-heading"><h2>Tempo through the motion</h2><span>Click to seek</span></div><svg id="history" viewBox="0 0 1000 160" role="img" aria-label="Applied tempo over video time"><g id="trace"></g><line id="cursor" x1="0" x2="0" y1="0" y2="145"/></svg><div class="timeline-labels"><span>Video start</span><span id="duration">—</span></div></section>
+<p class="note">The left view is a timing reconstruction of the same rollout, not a separately evaluated baseline policy. Both views share the same wall clock. The right view plays at its recorded speed. The gauge shows instantaneous applied tempo, while average speedup compares completion times. Applied tempo includes controller timing constraints; a low value alone does not identify contact.</p>
+<p class="note">Cup: second release; towel and trash: last release. Towel footage uses q95; cup and trash use q99. The gauge uses a logarithmic scale centered at 1× and the same ±0.12 s display averaging as the existing demo. Sounds stop when Ours completes. The optional cup trail shows up to four preceding gripper patches fading over 0.17 s.</p><p id="error" class="error" role="alert" hidden></p>
+<p class="note"><a href="static/tempo/cup_trail_pilot.mp4">Open the standalone Cup gripper-trail pilot ↗</a></p><div class="chunk-lab"><h3>Keep the path. Choose the clock.</h3>
+<p>One logged action chunk, four time schedules. The blue ghost follows the fixed 15 Hz reference; the gold point follows the selected channel.</p>
+<div class="chunk-controls" role="group" aria-label="Tempo quantile"><button data-quantile="q50" aria-pressed="false">q50 / 1×</button><button data-quantile="q90" aria-pressed="false">q90</button><button data-quantile="q95" aria-pressed="false">q95</button><button data-quantile="q99" aria-pressed="true">q99</button><button id="chunk-play">▶ Run chunk</button><label>View <select id="chunk-view"><option value="iso">3D</option><option value="xz">X–Z</option><option value="xy">X–Y</option><option value="yz">Y–Z</option></select></label></div>
+<div class="chunk-layout"><div><svg id="chunk-plot" viewBox="0 0 620 340" role="img" aria-label="Same action path with reference and selected tempo moving points"></svg><p id="chunk-time">Loading chunk…</p></div><div><video poster="static/tempo/cup_context.jpg" id="chunk-context" controls muted playsinline preload="metadata" aria-label="Recorded q99 rollout context"></video><p>Recorded q99 context · independent playback. Its motion may differ from the proposed chunk due to controller constraints and replanning.</p></div></div>
+<p class="note">q50 / 1× is the nominal 15 Hz path clock, not an extra predicted channel. q90/q95/q99 use the saved per-waypoint log-tempo outputs. This animation holds the proposed path fixed and does not re-solve the controller. Playbacks of the same path are shown at actual schedule time.</p></div>
+
+</div></section>
 </main>
 
 <footer>
