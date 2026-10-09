@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124012">
-<link rel="stylesheet" href="static/css/tempo.css?v=3">
-<script src="static/js/tempo.js?v=3" defer></script>
+<link rel="stylesheet" href="static/css/tempo.css?v=4">
+<script src="static/js/tempo.js?v=4" defer></script>
 </head>
 <body>
 
@@ -58,11 +58,11 @@
       <figure class="demo">
         <h3 class="demo-title">Towel folding</h3>
         <div class="video-frame portrait">
-          <video src="static/videos/towel.mp4?v=3f0cbf29" poster="static/videos/towel.jpg?v=a54ce4ca" width="824" height="860"
+          <video src="static/videos/towel.mp4?v=4f0cbf29" poster="static/videos/towel.jpg?v=a54ce4ca" width="824" height="860"
                  autoplay muted loop playsinline preload="metadata"
                  aria-label="Towel folding, baseline versus ours, real-time playback"></video>
         </div>
-        <figcaption class="demo-caption">Fold the towel on the table. <a href="static/videos/towel.mp4?v=3f0cbf29">Open video</a></figcaption>
+        <figcaption class="demo-caption">Fold the towel on the table. <a href="static/videos/towel.mp4?v=4f0cbf29">Open video</a></figcaption>
       </figure>
 
       <figure class="demo">
@@ -129,24 +129,24 @@
 <p class="lead">The same motion can follow different clocks. Explore applied tempo in real footage, then choose a channel for a fixed action chunk.</p>
 <nav class="tasks" aria-label="Choose a task"><button data-task="cup" aria-pressed="true">Cup stacking <span>q99</span></button><button data-task="towel" aria-pressed="false">Towel folding <span>q95</span></button><button data-task="trash" aria-pressed="false">Trash cleanup <span>q99</span></button></nav>
 <div class="workspace"><section class="comparison" aria-label="Synchronized comparison"><div class="video-labels"><div><i class="cyan"></i> Fixed 15 Hz clock <small>Reconstructed from the same footage</small></div><div><i class="gold"></i> Ours <small>Recorded execution · real time</small></div></div>
-<div class="video-stage"><video id="motion" controls playsinline muted preload="metadata" aria-label="Reconstructed fixed clock on the left, recorded execution on the right"></video><canvas id="ghost-trail" aria-hidden="true"></canvas></div>
-<div class="transport"><button id="replay">↺ Replay</button><a id="download" href="#" download>Download split video ↗</a><label class="trail-toggle"><input id="trail-enabled" type="checkbox"> Gripper trail · pilot</label><span id="clock">0.00 s</span></div></section>
+<div class="video-stage"><video id="motion" controls playsinline muted preload="metadata" aria-label="Reconstructed fixed clock on the left, recorded execution on the right"></video></div>
+<div class="transport"><button id="replay">↺ Replay</button><a id="download" href="#" download>Download split video ↗</a><span id="clock">0.00 s</span></div></section>
 <aside class="instrument" aria-label="Applied tempo speedometer"><p class="eyebrow">LIVE APPLIED TEMPO</p>
 <svg id="gauge" viewBox="0 0 320 230" role="img" aria-label="Speedometer relative to a fixed 15 Hz action clock"><path class="track" d="M 45.35 170.73 A 122 122 0 1 1 274.65 170.73"/><g id="ticks"></g><g id="needle"><path d="M155 130 L160 21 L165 130 Z"/><circle cx="160" cy="129" r="9"/></g><text id="rate" x="160" y="195" text-anchor="middle">—</text><text class="unit" x="160" y="220" text-anchor="middle">× FIXED-CLOCK PACE</text></svg>
 <p id="state" class="state" role="status">Loading telemetry…</p><div class="stats"><div><span>Ours finishes</span><strong id="done">—</strong></div><div><span>Fixed clock finishes</span><strong id="fixed">—</strong></div><div><span>Average speedup</span><strong id="average">—</strong></div></div>
-<div class="sound"><button id="sound" aria-pressed="false">Enable tempo sound</button><label for="volume">Volume <input id="volume" type="range" min="0" max="100" value="20"></label><p>Layered harmonic sound: faster tempo raises pitch, brightness and loudness. Added effect, not robot audio.</p></div></aside></div>
+<div class="sound"><button id="sound" aria-pressed="false">Enable tempo sound</button><label for="volume">Volume <input id="volume" type="range" min="0" max="100" value="40"></label><p>Bass-heavy acceleration sound: rising revs and a low-end swell as tempo increases. Added effect, not robot audio.</p></div></aside></div>
 <section class="timeline"><div class="timeline-heading"><h2>Tempo through the motion</h2><span>Click to seek</span></div><svg id="history" viewBox="0 0 1000 160" role="img" aria-label="Applied tempo over video time"><g id="trace"></g><line id="cursor" x1="0" x2="0" y1="0" y2="145"/></svg><div class="timeline-labels"><span>Video start</span><span id="duration">—</span></div></section>
 <p class="note">The left view is a timing reconstruction of the same rollout, not a separately evaluated baseline policy. Both views share the same wall clock. The right view plays at its recorded speed. The gauge shows instantaneous applied tempo, while average speedup compares completion times. Applied tempo includes controller timing constraints; a low value alone does not identify contact.</p>
-<p class="note">Cup: second release; towel and trash: last release. Towel footage uses q95; cup and trash use q99. The gauge uses a logarithmic scale centered at 1× and the same ±0.12 s display averaging as the existing demo. Sounds stop when Ours completes. The optional cup trail shows three local gripper afterimages at 0.10 / 0.20 / 0.30 s delays.</p><p id="error" class="error" role="alert" hidden></p>
+<p class="note">Cup: second release; towel and trash: last release. Towel footage uses q95; cup and trash use q99. The gauge uses a logarithmic scale centered at 1× and the same ±0.12 s display averaging as the existing demo. Sounds stop when Ours completes.</p><p id="error" class="error" role="alert" hidden></p>
 <div class="chunk-lab"><h3>One path. Four clocks.</h3>
 <p>Run all three comparisons together. Each 3D marker and its video frame share exactly the same playback clock.</p>
-<div class="chunk-controls"><button id="chunk-play" disabled>▶ Run chunk</button><span id="chunk-time">Loading synchronized frames…</span></div>
+<div class="chunk-controls"><button id="chunk-play" disabled>▶ Run full Cup</button><span id="chunk-time">Loading synchronized frames…</span></div>
 <div class="chunk-triptych">
 <article class="chunk-card"><h4>q50 vs q90</h4><svg id="chunk-q90" viewBox="0 0 380 260" role="img" aria-label="Fixed 3D motion: q50 versus q90"></svg><div class="frame-labels"><span>○ q50 / 1×</span><span>● q90</span></div><canvas id="frames-q90" width="360" height="300" role="img" aria-label="Synchronized q50 and q90 footage"></canvas><p id="time-q90"></p></article>
 <article class="chunk-card"><h4>q50 vs q95</h4><svg id="chunk-q95" viewBox="0 0 380 260" role="img" aria-label="Fixed 3D motion: q50 versus q95"></svg><div class="frame-labels"><span>○ q50 / 1×</span><span>● q95</span></div><canvas id="frames-q95" width="360" height="300" role="img" aria-label="Synchronized q50 and q95 footage"></canvas><p id="time-q95"></p></article>
 <article class="chunk-card"><h4>q50 vs q99</h4><svg id="chunk-q99" viewBox="0 0 380 260" role="img" aria-label="Fixed 3D motion: q50 versus q99"></svg><div class="frame-labels"><span>○ q50 / 1×</span><span>● q99</span></div><canvas id="frames-q99" width="360" height="300" role="img" aria-label="Synchronized q50 and q99 footage"></canvas><p id="time-q99"></p></article>
 </div>
-<p class="note">Same recorded first-approach segment, replayed with the v18/v20 timing reconstruction. Blue ghost: nominal 15 Hz (q50 / 1×). Colored point: selected tempo. The footage and measured 3D path use the same source timestamp. These are timing replays, not three separate robot executions or a new controller solve.</p></div>
+<p class="note">Same recorded Cup motion through the second release, replayed with the v18/v20 timing reconstruction. Blue ghost: nominal 15 Hz (q50 / 1×). Colored point: selected tempo. The footage and measured 3D path use the same source timestamp. These are timing replays, not three separate robot executions or a new controller solve.</p></div>
 
 </div></section>
 </main>

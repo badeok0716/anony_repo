@@ -20,12 +20,14 @@ import numpy as np
 import pandas as pd
 from v01_tempo_clock import tempo_clock
 from v04_fk import fk
+from v25_completion import completion
 
 lag = json.loads(Path(a.camera).read_text())['lag_s']
 t, applied, _, _, model99 = tempo_clock(a.stem, col=2, return_model=True)
 models = [tempo_clock(a.stem, col=c, return_model=True)[4] for c in (0, 1)] + [model99]
 # A visible first-approach segment, entirely within recorded footage.
-clip = np.linspace(0, 1, 121)
+end = completion(a.stem, 'cup') - lag
+clip = np.linspace(0, end, int(np.ceil(end * 120)) + 1)
 logt = clip + lag
 r99 = np.interp(logt, t, applied)
 model = [np.interp(logt, t, v) for v in models]
@@ -42,8 +44,8 @@ xyz = fk(q)
 cap = cv2.VideoCapture(a.video)
 fps = cap.get(cv2.CAP_PROP_FPS)
 assert abs(fps - 30) < .1, fps
-w, h, columns, count = 180, 300, 8, 31
-atlas = np.full((4*h, columns*w, 3), 255, np.uint8)
+w, h, columns, count = 180, 300, 10, int(np.ceil(end * fps)) + 1
+atlas = np.full((int(np.ceil(count/columns))*h, columns*w, 3), 255, np.uint8)
 for i in range(count):
     ok, frame = cap.read()
     assert ok, i
@@ -56,7 +58,7 @@ image_path = Path('static/tempo/chunk_atlas.jpg')
 assert cv2.imwrite(str(image_path), atlas, [cv2.IMWRITE_JPEG_QUALITY, 90])
 result = dict(source_rollout=Path(a.stem).name, clip_time=clip.tolist(), xyz=xyz.tolist(), clocks=clocks,
               atlas=dict(src=str(image_path), width=w, height=h, columns=columns, count=count, fps=fps),
-              semantics='Same measured first-approach segment and footage; v20 counterfactual clocks, not separate physical executions. q50 is nominal 15 Hz.',
+              semantics='Full visible Cup motion through second release; v20 counterfactual clocks, not separate physical executions. q50 is nominal 15 Hz.',
               video_lag_s=lag)
 Path(a.out).write_text(json.dumps(result, separators=(',', ':'))+'\n')
 print({k: v[-1] for k, v in clocks.items()})
