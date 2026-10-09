@@ -21,6 +21,8 @@ import pandas as pd
 from v01_tempo_clock import tempo_clock
 from v04_fk import fk
 from v25_completion import completion
+from v05_zilean2 import gripper_events
+from v19_segments import segments
 
 lag = json.loads(Path(a.camera).read_text())['lag_s']
 t, applied, _, _, model99 = tempo_clock(a.stem, col=2, return_model=True)
@@ -38,6 +40,8 @@ for name, rate in zip(('q50', 'q90', 'q95', 'q99'), rates):
     ratio = r99 / np.maximum(rate, 1e-3)
     clocks[name] = np.r_[0, np.cumsum(np.diff(clip) * ratio[1:])].tolist()
 steps = pd.read_csv(a.stem + '_steps.csv')
+events = [(time-lag, label) for time,label in gripper_events(steps.t.to_numpy(), steps.closure_meas.to_numpy()) if 0 < time-lag < end]
+boundaries, names = segments(events, 0, end, 'B')
 q = np.stack([np.interp(logt, steps.t, steps[f'q{i}']) for i in range(1, 8)], axis=1)
 xyz = fk(q)
 # Decode only one second; a compact atlas avoids asynchronous browser seeks.
@@ -57,6 +61,7 @@ cap.release()
 image_path = Path('static/tempo/chunk_atlas.jpg')
 assert cv2.imwrite(str(image_path), atlas, [cv2.IMWRITE_JPEG_QUALITY, 90])
 result = dict(source_rollout=Path(a.stem).name, clip_time=clip.tolist(), xyz=xyz.tolist(), clocks=clocks,
+              segments=dict(boundaries=boundaries, names=names),
               atlas=dict(src=str(image_path), width=w, height=h, columns=columns, count=count, fps=fps),
               semantics='Full visible Cup motion through second release; v20 counterfactual clocks, not separate physical executions. q50 is nominal 15 Hz.',
               video_lag_s=lag)

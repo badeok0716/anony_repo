@@ -1,4 +1,10 @@
 # Interactive tempo demo
+## Current revision: v18 B only (October 10)
+
+Supersedes the full-path view below: phase boundaries now come directly from v18/v20's `gripper_events` and `v19_segments.segments(..., 'B')`. Each runner shows only its current reach/pick or carry/place segment; earlier segments are removed, not accumulated. Spatial projection remains fixed across phase changes.
+Tempo chart, speedometer and speedup statistics are removed from the page. Audio remains opt-in.
+Offline trail review now uses the ORIGINAL v18B split4 panel, all four lanes including q50: two ghosts at 0.10/0.20 s with alpha 0.30/0.18. File: `/home/always216/ROBOT/analysis/tempo_viz_20261004/cup_split4_trail_light_v5.mp4`. It is not embedded in the page.
+
 ## Current revision: full Cup and bass acceleration (October 10)
 
 This revision supersedes the earlier audio and one-second segment details below.
