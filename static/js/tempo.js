@@ -15,9 +15,11 @@ function sample(rows, t) {
 function soundLevel(rate, active) {
   if (!audio) return;
   const now = audio.ctx.currentTime;
-  audio.source.playbackRate.setTargetAtTime(clamp(.8 * rate, .4, 2.4), now, .08);
-  audio.filter.frequency.setTargetAtTime(2200 + 2500 * clamp(rate - .5, 0, 3), now, .08);
-  audio.gain.gain.setTargetAtTime(enabled && active ? Number(byId('volume').value) / 100 * .35 : 0, now, .025);
+  const pace = clamp(rate, .35, 3);
+  // Harmonic turbine-like chord: no recording, hiss or random noise.
+  audio.voices.forEach((voice,i)=>voice.frequency.setTargetAtTime((72 + 105 * pace) * [1,2,3,4,6][i],now,.065));
+  audio.filter.frequency.setTargetAtTime(450 + 1350 * pace,now,.065);
+  audio.gain.gain.setTargetAtTime(enabled && active ? Number(byId('volume').value)/100 * (.055 + .115 * pace ** 1.4) : 0,now,.035);
 }
 function update() {
   if (!data || !task) return;
@@ -74,14 +76,17 @@ byId('sound').addEventListener('click', async () => {
     if (!audio) {
       const Audio = window.AudioContext || window.webkitAudioContext;
       if (!Audio) throw new Error('Web Audio is unavailable in this browser.');
-      const ctx = new Audio(), source = ctx.createBufferSource(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
-      await ctx.resume();
-      const response = await fetch('static/audio/f1-engine.mp3');
-      if (!response.ok) { await ctx.close(); throw new Error('Engine audio unavailable.'); }
-      source.buffer = await ctx.decodeAudioData(await response.arrayBuffer());
-      source.loop = true; source.loopStart = 3; source.loopEnd = Math.min(11,source.buffer.duration);
-      filter.type = 'lowpass'; gain.gain.value = 0;
-      source.connect(filter).connect(gain).connect(ctx.destination); source.start(0,3); audio = {ctx,source,filter,gain};
+      const ctx = new Audio(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+      filter.type='lowpass'; filter.Q.value=.55; gain.gain.value=0;
+      const compressor=ctx.createDynamicsCompressor();
+      compressor.threshold.value=-12; compressor.ratio.value=4;
+      filter.connect(gain).connect(compressor).connect(ctx.destination);
+      const voices=[.48,.24,.14,.09,.05].map((level,i)=>{
+        const osc=ctx.createOscillator(), mix=ctx.createGain();
+        osc.type='sine'; osc.frequency.value=177*[1,2,3,4,6][i];
+        mix.gain.value=level; osc.connect(mix).connect(filter); osc.start(); return osc;
+      });
+      audio={ctx,voices,filter,gain};
     }
     await audio.ctx.resume(); enabled = !enabled;
     byId('sound').setAttribute('aria-pressed', String(enabled));
@@ -123,58 +128,99 @@ function clearTrail() { trailFrames=[];lastTrailTime=-1;trailCtx.clearRect(0,0,t
 function drawTrail() {
   if (!byId('trail-enabled').checked || byId('trail-enabled').disabled || video.readyState<2 || video.seeking) { clearTrail(); return; }
   const w=video.videoWidth,h=video.videoHeight,t=video.currentTime;
-  if (!w || !h || Math.abs(t-lastTrailTime)<1/30) return;
+  if (!w || !h || Math.abs(t-lastTrailTime)<.025) return;
   if (t<lastTrailTime || t-lastTrailTime>.3) clearTrail();
   trailCanvas.width=w;trailCanvas.height=h;
   detectCtx.drawImage(video,w/2,0,w/2,h,0,0,128,128);
   const pixels=detectCtx.getImageData(0,0,128,128).data;
-  let x=0,y=0,n=0;
+  let x=0,y=0,n=0;const red=new Uint8Array(128*128);
   for(let j=12;j<112;j++) for(let i=6;i<122;i++){
     const k=(j*128+i)*4,r=pixels[k],g=pixels[k+1],b=pixels[k+2];
-    if(r>100 && r>g*1.55 && r>b*1.35){x+=i;y+=j;n++;}
+    if(r>110 && g<90 && b<90 && r>g*2 && r>b*2)red[j*128+i]=1;
   }
-  if(n<4){clearTrail();return;}
+  // Largest connected red component avoids averaging fingers with brown scenery.
+  for(let seed=0;seed<red.length;seed++){
+    if(!red[seed])continue;
+    const queue=[seed];red[seed]=0;let sx=0,sy=0;
+    for(let head=0;head<queue.length;head++){
+      const k=queue[head],i=k%128,j=Math.floor(k/128);sx+=i;sy+=j;
+      for(const next of [k-128,k+128,...(i>0?[k-1]:[]),...(i<127?[k+1]:[])])
+        if(next>=0&&next<red.length&&red[next]){red[next]=0;queue.push(next);}
+    }
+    if(queue.length>n){n=queue.length;x=sx;y=sy;}
+  }
+  if(n<4){lastTrailTime=t;trailCtx.clearRect(0,0,w,h);return;}
   x=w/2+(x/n/128)*w/2;y=y/n/128*h;
   const radius=h*.085;
   for(const old of trailFrames){
     const age=t-old.t;
-    if(age<.035 || age>.17)continue;
-    trailCtx.save();trailCtx.globalAlpha=.4*(1-age/.20);
+    if(age<.075 || age>.32)continue;
+    // Three spaced ghosts, rather than nearly-overlapping adjacent frames.
+    if(![.10,.20,.30].some(delay=>Math.abs(age-delay)<.018))continue;
+    trailCtx.save();trailCtx.beginPath();trailCtx.rect(w/2,0,w/2,h);trailCtx.clip();
+    trailCtx.globalAlpha=.55*(1-age/.48);
+    trailCtx.shadowColor=age>.18?'#a855f7':'#00bcd4';trailCtx.shadowBlur=2;
     trailCtx.drawImage(old.patch,old.x-radius,old.y-radius);trailCtx.restore();
   }
   const patch=document.createElement('canvas');patch.width=patch.height=Math.ceil(radius*2);
   const c=patch.getContext('2d');c.drawImage(video,x-radius,y-radius,radius*2,radius*2,0,0,patch.width,patch.height);
-  c.globalCompositeOperation='destination-in';const mask=c.createRadialGradient(radius,radius,radius*.2,radius,radius,radius);
+  // Keep red fingers / dark gripper, not the tabletop: a circular scene patch
+  // creates an opaque glowing blob instead of an identifiable afterimage.
+  const cut=c.getImageData(0,0,patch.width,patch.height);
+  for(let k=0;k<cut.data.length;k+=4){
+    const r=cut.data[k],g=cut.data[k+1],b=cut.data[k+2];
+    const finger=r>85 && r>g*1.4 && r>b*1.25;
+    const dark=Math.max(r,g,b)<105;
+    if(!finger && !dark)cut.data[k+3]=0;
+    else{cut.data[k]=Math.round(r*.45+10);cut.data[k+1]=Math.round(g*.45+125);cut.data[k+2]=Math.round(b*.45+140);}
+  }
+  c.putImageData(cut,0,0);
+  c.globalCompositeOperation='destination-in';const mask=c.createRadialGradient(radius,radius,radius*.65,radius,radius,radius);
   mask.addColorStop(0,'rgba(0,0,0,1)');mask.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=mask;c.fillRect(0,0,patch.width,patch.height);
-  trailFrames.push({patch,x,y,t});trailFrames=trailFrames.filter(f=>t-f.t<.17).slice(-4);lastTrailTime=t;
+  trailCtx.save();trailCtx.globalCompositeOperation='destination-out';
+  trailCtx.drawImage(patch,x-radius,y-radius);trailCtx.restore();
+  trailFrames.push({patch,x,y,t});trailFrames=trailFrames.filter(f=>t-f.t<.34).slice(-12);lastTrailTime=t;
 }
 
-let chunkData, quantile='q99', chunkGeneration=0;
-function chunkPosition(clock,t){
-  const rows=clock.map((time,i)=>[time,i]);return sample(rows,t);
+
+let chunkData, atlas, chunkGeneration=0;
+const channels=['q90','q95','q99'], channelColors=['#9460cc','#169470','#bf7908'];
+function clockIndex(name,t){return sample(chunkData.clocks[name].map((v,i)=>[v,i]),t);}
+function positionAt(points,index){
+  const a=Math.floor(index),b=Math.min(a+1,points.length-1),f=index-a;
+  return points[a].map((v,i)=>v+(points[b][i]-v)*f);
 }
 function drawChunk(t=0){
-  if(!chunkData)return;
-  const view=byId('chunk-view').value, axes={xz:[0,2],xy:[0,1],yz:[1,2]}[view];
-  const pts=chunkData.xyz.map(p=>view==='iso'?[.866*(p[0]-p[1]),p[2]-.5*(p[0]+p[1])]:axes.map(i=>p[i]));
+  if(!chunkData || !atlas)return;
+  const pts=chunkData.xyz.map(p=>[.866*(p[0]-p[1]),p[2]-.5*(p[0]+p[1])]);
   const min=[0,1].map(i=>Math.min(...pts.map(p=>p[i]))),max=[0,1].map(i=>Math.max(...pts.map(p=>p[i])));
-  const scale=Math.min(510/Math.max(max[0]-min[0],.01),230/Math.max(max[1]-min[1],.01));
-  const project=p=>[310+(p[0]-(max[0]+min[0])/2)*scale,170-(p[1]-(max[1]+min[1])/2)*scale];
-  const xy=pts.map(project),selected=chunkPosition(chunkData.clocks[quantile],t),base=chunkPosition(chunkData.clocks.q50,t);
-  const at=index=>{const a=Math.floor(index),b=Math.min(a+1,xy.length-1),f=index-a;return xy[a].map((v,i)=>v+(xy[b][i]-v)*f)};
-  const a=at(selected),b=at(base);
-  byId('chunk-plot').innerHTML=`<path d="${xy.map((p,i)=>`${i?'L':'M'}${p.join(',')}`).join(' ')}" fill="none" stroke="#64748b" stroke-width="2"/>${xy.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#64748b"/>`).join('')}<circle cx="${b[0]}" cy="${b[1]}" r="13" fill="#147ba4" opacity=".25"/><circle cx="${b[0]}" cy="${b[1]}" r="10" fill="none" stroke="#147ba4" stroke-width="2"/><circle cx="${a[0]}" cy="${a[1]}" r="6" fill="#b46b00"/><text x="20" y="28" fill="#147ba4" font-size="14">○ q50 / 1× reference</text><text x="390" y="28" fill="#965b00" font-size="14">● ${quantile} selected</text><text x="20" y="320" fill="#64748b" font-size="12">${byId('chunk-view').selectedOptions[0].text} projection · equal spatial scale</text>`;
-  byId('chunk-time').textContent=`Elapsed ${t.toFixed(2)} s · reference ${chunkData.clocks.q50.at(-1).toFixed(2)} s · ${quantile} ${chunkData.clocks[quantile].at(-1).toFixed(2)} s`;
+  const scale=Math.min(300/Math.max(max[0]-min[0],.01),180/Math.max(max[1]-min[1],.01));
+  const project=p=>[190+(p[0]-(max[0]+min[0])/2)*scale,125-(p[1]-(max[1]+min[1])/2)*scale];
+  const xy=pts.map(project),base=clockIndex('q50',t);
+  channels.forEach((name,k)=>{
+    const index=clockIndex(name,t),a=positionAt(xy,index),b=positionAt(xy,base),color=channelColors[k];
+    byId('chunk-'+name).innerHTML=`<path d="${xy.map((p,i)=>`${i?'L':'M'}${p.join(',')}`).join(' ')}" fill="none" stroke="#b6bec9" stroke-width="2"/>${xy.filter((_,i)=>i%8===0).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="#778494"/>`).join('')}<circle cx="${b[0]}" cy="${b[1]}" r="12" fill="#147ba4" opacity=".22"/><circle cx="${b[0]}" cy="${b[1]}" r="9" fill="none" stroke="#147ba4" stroke-width="2"/><circle cx="${a[0]}" cy="${a[1]}" r="6" fill="${color}"/><path d="M25 222 l23 13 M25 222 l-14 14 M25 222 v-27" fill="none" stroke="#778494"/><text x="49" y="239" font-size="11">X</text><text x="3" y="248" font-size="11">Y</text><text x="21" y="189" font-size="11">Z</text>`;
+    const canvas=byId('frames-'+name),ctx=canvas.getContext('2d'),spec=chunkData.atlas;
+    [base,index].forEach((idx,lane)=>{
+      const clip=sample(chunkData.clip_time.map((v,i)=>[i,v]),idx);
+      const frame=Math.min(spec.count-1,Math.round(clip*spec.fps));
+      ctx.drawImage(atlas,(frame%spec.columns)*spec.width,Math.floor(frame/spec.columns)*spec.height,spec.width,spec.height,lane*spec.width,0,spec.width,spec.height);
+    });
+    byId('time-'+name).textContent=`q50 ${chunkData.clocks.q50.at(-1).toFixed(2)} s · ${name} ${chunkData.clocks[name].at(-1).toFixed(2)} s`;
+    canvas.dataset.progress=index.toFixed(2);
+  });
+  byId('chunk-time').textContent=`Shared clock: ${t.toFixed(2)} s`;
 }
-function stopChunk(){chunkGeneration++;byId('chunk-play').textContent='▶ Run chunk';}
-document.querySelectorAll('[data-quantile]').forEach(button=>button.addEventListener('click',()=>{
-  stopChunk();quantile=button.dataset.quantile;document.querySelectorAll('[data-quantile]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));drawChunk();
-}));
-byId('chunk-view').addEventListener('change',()=>{stopChunk();drawChunk();});
 byId('chunk-play').addEventListener('click',()=>{
-  if(!chunkData)return;
-  const token=++chunkGeneration,start=performance.now(),end=Math.max(chunkData.clocks.q50.at(-1),chunkData.clocks[quantile].at(-1));
-  byId('chunk-play').textContent='↺ Restart';
-  const tick=now=>{if(token!==chunkGeneration)return;const t=Math.min((now-start)/1000,end);drawChunk(t);if(t<end)requestAnimationFrame(tick);else stopChunk();};requestAnimationFrame(tick);
+  if(!chunkData || !atlas)return;
+  const token=++chunkGeneration,start=performance.now(),end=Math.max(...Object.values(chunkData.clocks).map(c=>c.at(-1)));
+  byId('chunk-play').textContent='↺ Restart all';
+  const tick=now=>{
+    if(token!==chunkGeneration)return;
+    const t=Math.min((now-start)/1000,end);drawChunk(t);
+    if(t<end)requestAnimationFrame(tick);else byId('chunk-play').textContent='▶ Run chunk';
+  };requestAnimationFrame(tick);
 });
-fetch('static/data/chunk.json').then(r=>{if(!r.ok)throw new Error('Chunk data unavailable');return r.json();}).then(d=>{chunkData=d;byId('chunk-context').src=d.context_video;drawChunk();}).catch(e=>{byId('chunk-time').textContent=e.message;});
+fetch('static/data/segment.json').then(r=>{if(!r.ok)throw new Error('Segment data unavailable');return r.json();}).then(async d=>{
+  chunkData=d;atlas=new Image();atlas.src=d.atlas.src;await atlas.decode();drawChunk();byId('chunk-play').disabled=false;
+}).catch(e=>{byId('chunk-time').textContent=e.message;});
