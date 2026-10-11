@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124012">
-<link rel="stylesheet" href="static/css/tempo.css?v=13">
+<link rel="stylesheet" href="static/css/tempo.css?v=14">
 <script src="static/js/tempo.js?v=10" defer></script>
 </head>
 <body>
@@ -49,17 +49,17 @@
       <figure class="demo ladder">
         <h3 class="demo-title">Trash cleanup</h3>
         <video src="static/tempo/ladder_trash.mp4" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result">Default 1&times; + PD <b class="warn">0/15</b> &middot; Default 1&times; + high-gain PD <b class="warn">0/15</b> &middot; Default 1&times; + our controller <b>9/15</b> &middot; Ours <b class="good">15/15</b> (48.26 s)</span><br>The high-gain PD run ends in a <b class="warn">safety stop (red lights)</b>: stiff tracking asks for more power and speed than the arm allows. Our controller keeps every chunk within the arm's limits.</figcaption>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.26 s)</span></span><br>The high-gain PD run ends in a <b class="warn">safety stop (red lights)</b>: stiff tracking asks for more power and speed than the arm allows.<br>Our controller keeps every chunk within the arm's limits.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Cup stacking</h3>
         <video src="static/tempo/ladder_cup.mp4" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result">Default 1&times; + PD <span class="ok">&#10003;</span> 8.2 s &middot; Default 1&times; + high-gain PD <span class="no">&#10007;</span> &middot; Default 1&times; + our controller <span class="ok">&#10003;</span> 4.2 s &middot; Ours <span class="ok">&#10003;</span> 3.16 s</span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.2 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.2 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
         <video src="static/tempo/ladder_towel.mp4" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result">Default 1&times; + PD <span class="no">&#10007;</span> &middot; Default 1&times; + high-gain PD <span class="no">&#10007;</span> &middot; Default 1&times; + our controller <span class="no">&#10007;</span> (10 s timeout) &middot; Ours <span class="ok">&#10003;</span> 4.49 s</span><br>With high-gain PD, a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2; and the run has to be stopped; our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (10 s timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>With high-gain PD, a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2; and the run has to be stopped.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
       </figure>
 
 
@@ -114,11 +114,11 @@
   </section>
 <section id="training-time" class="tempo"><div class="container">
 <h2 class="section-title">Align the tempo at training time</h2>
-<p class="tempo-intro">Demonstrators move at their own pace, so situations that look the same can come with action labels that run at very different speeds. Below are three demonstrations at nearly the same moment of cup stacking, right after the grasp. Over the next 12 waypoints of their action chunks (0.8 s, one waypoint per 1/15 s), they cover very different distances. Retiming every demonstration to the median clock of our learned speed prior makes the same situation come with the same tempo, which is easier to imitate.</p>
+<p class="tempo-intro">Demonstrators move at their own pace, so situations that look the same can come with action labels that run at very different speeds. Below are three demonstrations at nearly the same moment of cup stacking, just after the first cup is picked up. Laid out at one waypoint per 1/15 s, their action labels spread far apart along the same path. Retiming every demonstration to the median clock of our learned speed prior brings the same waypoints back together, so the same situation comes with the same tempo, which is easier to imitate.</p>
 <figure class="tempo-figure train-figure">
-<svg class="train-fig" viewBox="0 0 1000 560" role="img" aria-label="Three similar post-grasp observations; one 15-waypoint action chunk each, before and after tempo alignment.">
+<svg class="train-fig" viewBox="0 0 1000 560" role="img" aria-label="Three similar post-grasp observations; their waypoints before and after tempo alignment.">
 <text x="20" y="24" font-size="14" font-weight="600" text-anchor="start" fill="#1f2328">Similar observations</text>
-<text x="20" y="41" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">wrist camera, right after grasp</text>
+<text x="20" y="41" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">wrist camera, just after picking up the first cup</text>
 <rect x="18" y="56" width="148" height="148" rx="6" fill="none" stroke="#4f46e5" stroke-width="3"/>
 <image href="static/tempo/train_obs_1.jpg" x="20" y="58" width="144" height="144" preserveAspectRatio="xMidYMid slice"/>
 <circle cx="182.0" cy="130.0" r="5" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
@@ -134,18 +134,6 @@
 <text x="300" y="36" font-size="15" font-weight="600" text-anchor="start" fill="#1f2328">Original timing</text>
 <text x="300" y="54" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">raw labels: the operator's pace</text>
 <rect x="300" y="66" width="250" height="186" rx="8" fill="#f6f8fa" stroke="#e5e7eb"/>
-<polyline points="317.6,199.3 319.4,193.5 318.5,192.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="314.7,186.0 319.5,175.3 318.5,167.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="312.7,169.2 319.0,147.0 320.1,143.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="310.9,154.3 319.4,121.9 324.2,112.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="310.0,135.3 321.7,102.7 332.0,92.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="310.9,121.0 326.7,83.4 346.3,80.1" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="315.3,103.3 334.5,74.6 359.6,80.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="320.7,91.3 343.8,74.0 378.4,95.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="328.0,81.6 357.3,79.4 394.4,120.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="338.0,78.5 370.6,92.8 405.6,145.4" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="346.3,80.1 382.8,109.3 414.1,176.4" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="357.4,89.0 393.1,126.1 418.2,198.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
 <polyline points="319.5,209.5 317.6,199.3 314.7,186.0 312.7,169.2 310.9,154.3 310.0,135.3 310.9,121.0 315.3,103.3 320.7,91.3 328.0,81.6 338.0,78.5 346.3,80.1 357.4,89.0" fill="none" stroke="#4f46e5" stroke-width="1.6" stroke-opacity="0.7"/>
 <circle cx="317.6" cy="199.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
 <circle cx="314.7" cy="186.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
@@ -250,7 +238,7 @@
 <path d="M868.5,185.9 L872.7,193.3 L864.4,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
 <path d="M891.8,185.9 L895.9,193.3 L887.6,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
 <text x="901.7895615050386" y="194" font-size="11" font-weight="600" text-anchor="start" fill="#0f766e">262 mm</text>
-<text x="960" y="54" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">152–262 mm in 0.8 s · spread 22%</text>
+<text x="960" y="54" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">per-waypoint spread 19%</text>
 <rect x="300" y="276" width="660" height="38" rx="10" fill="#eef4ff" stroke="#bfd2f8"/>
 <text x="630" y="300" font-size="13" font-weight="600" text-anchor="middle" fill="#1d4ed8">Learned speed prior → retime every demonstration to its q50 (median) clock</text>
 <path d="M630,262 L630,274 M624,268 L630,275 L636,268" stroke="#1d4ed8" stroke-width="1.6" fill="none"/>
@@ -258,18 +246,6 @@
 <text x="300" y="338" font-size="15" font-weight="600" text-anchor="start" fill="#1f2328">Tempo-aligned</text>
 <text x="300" y="356" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">labels on the learned q50 clock</text>
 <rect x="300" y="368" width="250" height="186" rx="8" fill="#f6f8fa" stroke="#e5e7eb"/>
-<polyline points="315.1,489.9 319.4,488.9 318.5,489.5" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="311.0,457.3 319.0,453.6 319.5,457.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="311.3,421.5 320.5,413.6 323.2,421.4" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="321.9,391.5 327.6,384.2 333.1,393.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="338.7,380.6 346.1,376.7 351.2,380.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="359.5,393.1 369.2,393.2 372.1,391.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="380.0,418.6 390.3,423.4 392.0,418.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="393.7,448.2 404.5,454.9 407.1,451.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="401.9,478.9 411.0,481.1 415.4,483.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="407.7,506.8 413.9,504.0 419.0,509.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="410.4,527.3 415.0,521.6 418.8,530.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="411.5,539.9 414.6,535.0 416.1,546.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
 <polyline points="319.5,511.5 315.1,489.9 311.0,457.3 311.3,421.5 321.9,391.5 338.7,380.6 359.5,393.1 380.0,418.6 393.7,448.2 401.9,478.9 407.7,506.8 410.4,527.3 411.5,539.9" fill="none" stroke="#4f46e5" stroke-width="1.6" stroke-opacity="0.7"/>
 <circle cx="315.1" cy="489.9" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
 <circle cx="311.0" cy="457.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
@@ -374,9 +350,9 @@
 <path d="M922.6,487.9 L926.7,495.3 L918.4,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
 <path d="M939.1,487.9 L943.2,495.3 L934.9,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
 <text x="949.0566037735848" y="496" font-size="11" font-weight="600" text-anchor="start" fill="#0f766e">303 mm</text>
-<text x="960" y="356" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">299–303 mm in 0.8 s · spread 1%</text>
+<text x="960" y="356" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">per-waypoint spread 2%</text>
 </svg>
-<figcaption>Real labels from the 412-demonstration cup dataset: the same three observations and the same 12-waypoint prefix of their chunks before and after retiming, identical scales, starts moved to a common point; grey dashed lines join the same waypoint across the three demonstrations. Spread = standard deviation / mean of the distance covered.</figcaption>
+<figcaption>Real labels from the 412-demonstration cup dataset: the same three observations and the same waypoints before and after retiming, identical scales, starts moved to a common point; grey dashed lines join the same waypoint across the three demonstrations. Spread = standard deviation / mean of the distance covered at each waypoint, averaged over the waypoints.</figcaption>
 </figure>
 </div></section>
 <section id="inference-time" class="tempo"><div class="container">

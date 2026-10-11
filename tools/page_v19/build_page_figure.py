@@ -20,10 +20,10 @@ def build(npz, img_urls):
     lrn = z["learned_q50_full_xyz_mm"][:, :n + 1] - z["learned_q50_full_xyz_mm"][:, :1]
     sgn = 1 if np.mean(raw[:, -1, 1]) >= 0 else -1                     # motion to the right
     W, H = 1000, 560
-    o = [f'<svg class="train-fig" viewBox="0 0 {W} {H}" role="img" aria-label="Three similar post-grasp observations; one 15-waypoint action chunk each, before and after tempo alignment.">']
+    o = [f'<svg class="train-fig" viewBox="0 0 {W} {H}" role="img" aria-label="Three similar post-grasp observations; their waypoints before and after tempo alignment.">']
     T = lambda s, x, y, sz=13, w=400, a="start", c="#1f2328": o.append(f'<text x="{x}" y="{y}" font-size="{sz}" font-weight="{w}" text-anchor="{a}" fill="{c}">{s}</text>')
     # left: observations
-    T("Similar observations", 20, 24, 14, 600); T("wrist camera, right after grasp", 20, 41, 11, 400, "start", "#59636e")
+    T("Similar observations", 20, 24, 14, 600); T("wrist camera, just after picking up the first cup", 20, 41, 11, 400, "start", "#59636e")
     for i, url in enumerate(img_urls):
         y = 58 + i * 160
         o.append(f'<rect x="18" y="{y - 2}" width="148" height="148" rx="6" fill="none" stroke="{COL[i]}" stroke-width="3"/>')
@@ -39,9 +39,6 @@ def build(npz, img_urls):
         T(title, 300, y0 - 34, 15, 600); T(sub, 300, y0 - 16, 11, 400, "start", "#59636e")
         px = lambda p: (300 + 10 + (sgn * p[1] - ymin) * s, y0 + ph + 4 - (p[2] - zmin) * s)
         o.append(f'<rect x="300" y="{y0 - 4}" width="{pw + 20}" height="{ph + 16}" rx="8" fill="#f6f8fa" stroke="#e5e7eb"/>')
-        for k in range(1, len(arr[0])):                              # same waypoint index across demos A-B-C
-            q3 = [px(a[k]) for a in arr]
-            o.append(f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in q3)}" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>')
         for i, a in enumerate(arr):
             pts = [px(p) for p in a]
             o.append(f'<polyline points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in pts)}" fill="none" stroke="{COL[i]}" stroke-width="1.6" stroke-opacity="0.7"/>')
@@ -65,17 +62,18 @@ def build(npz, img_urls):
             T(f"{d[-1]:.0f} mm", L(d[-1]) + 10, yy + 4, 11, 600, "start", COL[i])
         T(stat, sx1, y0 - 16, 12, 600, "end", "#1f2328")
     m = lambda a: np.linalg.norm(np.diff(a, axis=1), axis=2).sum(1)
-    cv = lambda v: np.std(v) / np.mean(v) * 100
+    cum = lambda a: np.cumsum(np.linalg.norm(np.diff(a, axis=1), axis=2), axis=1)      # distance at every waypoint
+    cv = lambda a: float(np.mean(cum(a).std(0) / cum(a).mean(0)) * 100)                # per-waypoint CV, averaged
     rr, ll = m(raw), m(lrn)
-    row(raw, 70, "Original timing", "raw labels: the operator's pace", f"{rr.min():.0f}–{rr.max():.0f} mm in 0.8 s · spread {cv(rr):.0f}%")
+    row(raw, 70, "Original timing", "raw labels: the operator's pace", f"per-waypoint spread {cv(raw):.0f}%")
     # speed prior box between the rows
     o.append(f'<rect x="300" y="276" width="660" height="38" rx="10" fill="#eef4ff" stroke="#bfd2f8"/>')
     T("Learned speed prior → retime every demonstration to its q50 (median) clock", 630, 300, 13, 600, "middle", "#1d4ed8")
     o.append('<path d="M630,262 L630,274 M624,268 L630,275 L636,268" stroke="#1d4ed8" stroke-width="1.6" fill="none"/>')
     o.append('<path d="M630,316 L630,330 M624,324 L630,331 L636,324" stroke="#1d4ed8" stroke-width="1.6" fill="none"/>')
-    row(lrn, 372, "Tempo-aligned", "labels on the learned q50 clock", f"{ll.min():.0f}–{ll.max():.0f} mm in 0.8 s · spread {cv(ll):.0f}%")
+    row(lrn, 372, "Tempo-aligned", "labels on the learned q50 clock", f"per-waypoint spread {cv(lrn):.0f}%")
     o.append("</svg>")
-    return "\n".join(o), dict(raw_mm=rr.round(1).tolist(), aligned_mm=ll.round(1).tolist(), cv_raw=round(cv(rr), 1), cv_aligned=round(cv(ll), 1))
+    return "\n".join(o), dict(raw_mm=rr.round(1).tolist(), aligned_mm=ll.round(1).tolist(), cv_raw=round(cv(raw), 1), cv_aligned=round(cv(lrn), 1))
 
 if __name__ == "__main__":
     svg, stats = build(sys.argv[1], sys.argv[2:5]); open(sys.argv[5], "w").write(svg); print(json.dumps(stats))
