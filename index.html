@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124012">
-<link rel="stylesheet" href="static/css/tempo.css?v=11">
-<script src="static/js/tempo.js?v=8" defer></script>
+<link rel="stylesheet" href="static/css/tempo.css?v=12">
+<script src="static/js/tempo.js?v=9" defer></script>
 </head>
 <body>
 
@@ -23,11 +23,11 @@
     <p class="authors">Anonymous Authors</p>
     <p class="venue">Under review as a conference paper at ICLR 2027</p>
     <nav class="links" aria-label="Sections">
-      <a class="button" href="#training-time">Training-time tempo</a>
-      <a class="button" href="#inference-time">Inference-time tempo</a>
       <a class="button" href="#demos"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><span class="hide-sm">Real-time</span>Videos</a>
       <a class="button" href="#abstract"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h7l3 3v10H3zm2 5v1h6v-1zm0 2.5v1h6V9zm0 2.5v1h4v-1z"/></svg>Abstract</a>
       <a class="button" href="#method"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 5h4v6H1zm5 2h4v2H6zm5-2h4v6h-4z"/></svg>Method</a>
+      <a class="button" href="#training-time">Training-time tempo</a>
+      <a class="button" href="#inference-time">Inference-time tempo</a>
     </nav>
   </div>
 </header>
@@ -43,25 +43,26 @@
 
       <div class="group-head">
         <h2 class="group-title">Fine-tuned</h2>
-        <p class="group-note">Four real runs per task, started together when the arm starts moving: <strong>Default 1&times; + PD</strong>, <strong>Default 1&times; + high-gain PD</strong> (gains &times;4, velocity gains &times;2, no step clipping), <strong>Default 1&times; + our controller</strong>, and <strong>Ours</strong> (predicted tempo + our controller). <em>Default</em>: DROID joint-position policy fine-tuned on the demonstrations at their recorded timing.</p>
+        <p class="group-note">Four real runs per task: <strong>Default 1&times; + PD</strong>, <strong>Default 1&times; + high-gain PD</strong> (gains &times;4, velocity gains &times;2, no step clipping), <strong>Default 1&times; + our controller</strong>, and <strong>Ours</strong> (predicted tempo + our controller). <em>Default</em>: DROID joint-position policy fine-tuned on the demonstrations at their recorded timing.</p>
       </div>
 
       <figure class="demo ladder">
-        <h3 class="demo-title">Cup stacking</h3>
-        <video src="static/tempo/ladder_cup.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
-        <figcaption class="demo-caption">Stack three cups into a pyramid. <b>Success</b>: PD, our controller, ours &middot; <b class="warn">failure</b>: high-gain PD. Higher gains do not speed up the default policy: it tracks its targets within about 1.3&deg;, but its chunks advance only about 1.8&deg; per step (ours: 3.7&deg;), because it learned the operators' slower timing. <a href="static/tempo/ladder_cup.mp4">Open video</a></figcaption>
+        <h3 class="demo-title">Trash cleanup</h3>
+        <video src="static/tempo/ladder_trash.mp4" autoplay muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
+        <div class="ladder-bar"><button type="button" class="replay" aria-label="Replay the trash cleanup video">&#8634; Replay</button></div>
+        <figcaption class="demo-caption">Paper balls in the bin: Default 1&times; + PD <b class="warn">0/15</b>, Default 1&times; + high-gain PD <b class="warn">0/15</b>, Default 1&times; + our controller <b>9/15</b>, Ours <b>15/15</b>. The high-gain PD run ends in a <b class="warn">safety stop (red lights)</b>: stiff tracking demands more power and speed than the arm allows, so it aborts. Our controller keeps every chunk within the arm's limits.</figcaption>
       </figure>
-
+      <figure class="demo ladder">
+        <h3 class="demo-title">Cup stacking</h3>
+        <video src="static/tempo/ladder_cup.mp4" autoplay muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
+        <div class="ladder-bar"><button type="button" class="replay" aria-label="Replay the cup stacking video">&#8634; Replay</button></div>
+        <figcaption class="demo-caption">Stack three cups into a pyramid. <b>Success</b>: Default 1&times; + PD, Default 1&times; + our controller, Ours. <b class="warn">Failure</b>: Default 1&times; + high-gain PD. Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
+      </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
-        <video src="static/tempo/ladder_towel.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
-        <figcaption class="demo-caption">Fold the towel on the table. Only <b>ours succeeds</b>; the other three <b class="warn">fail</b>. With high-gain PD, a chunk that asks for a sharp change is followed as fast as the gains allow: the wrist joint (joint 7) reached 100&ndash;140 rad/s&sup2; (99th percentile, up to 190 rad/s&sup2;) and the run had to be stopped. Our controller keeps joint 7 near its 20 rad/s&sup2; limit (at most 30). <a href="static/tempo/ladder_towel.mp4">Open video</a></figcaption>
-      </figure>
-
-      <figure class="demo ladder">
-        <h3 class="demo-title">Trash cleanup</h3>
-        <video src="static/tempo/ladder_trash.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
-        <figcaption class="demo-caption">Put the paper balls into the bin: <b class="warn">0/15</b> (PD), <b class="warn">0/15</b> (high-gain PD), <b>9/15</b> (default policy + our controller), <b>15/15</b> (ours). The high-gain PD run ends in a <b class="warn">safety stop: the robot's lights turn red</b>. The arm's logs record a reflex abort in every 1&times; high-gain run (<code>power_limit_violation</code> or <code>joint_velocity_violation</code>): stiff tracking of 15 Hz targets demands more power and speed than the arm allows. Our controller plans each chunk within velocity, acceleration and torque limits, so the same default policy keeps running. <a href="static/tempo/ladder_trash.mp4">Open video</a></figcaption>
+        <video src="static/tempo/ladder_towel.mp4" autoplay muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
+        <div class="ladder-bar"><button type="button" class="replay" aria-label="Replay the towel folding video">&#8634; Replay</button></div>
+        <figcaption class="demo-caption">Fold the towel. <b>Success</b>: Ours only. <b class="warn">Failure</b>: Default 1&times; + PD, Default 1&times; + high-gain PD, Default 1&times; + our controller (10 s timeout). With high-gain PD, a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2; and the run has to be stopped; our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
       </figure>
 
 
@@ -116,7 +117,7 @@
   </section>
 <section id="training-time" class="tempo"><div class="container">
 <h2 class="section-title">Align the tempo at training time</h2>
-<p class="tempo-intro">Demonstrators move at their own pace, so situations that look the same can come with action labels that run at very different speeds. Below are three demonstrations at nearly the same moment of cup stacking, right after the grasp. Their action chunks (15 waypoints, one per 1/15 s) cover very different distances. Retiming every demonstration to the median clock of our learned speed prior makes the same situation come with the same tempo, which is easier to imitate.</p>
+<p class="tempo-intro">Demonstrators move at their own pace, so situations that look the same can come with action labels that run at very different speeds. Below are three demonstrations at nearly the same moment of cup stacking, right after the grasp. Over the next 12 waypoints of their action chunks (0.8 s, one waypoint per 1/15 s), they cover very different distances. Retiming every demonstration to the median clock of our learned speed prior makes the same situation come with the same tempo, which is easier to imitate.</p>
 <figure class="tempo-figure train-figure">
 <svg class="train-fig" viewBox="0 0 1000 560" role="img" aria-label="Three similar post-grasp observations; one 15-waypoint action chunk each, before and after tempo alignment.">
 <text x="20" y="24" font-size="14" font-weight="600" text-anchor="start" fill="#1f2328">Similar observations</text>
@@ -136,147 +137,123 @@
 <text x="300" y="36" font-size="15" font-weight="600" text-anchor="start" fill="#1f2328">Original timing</text>
 <text x="300" y="54" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">raw labels: the operator's pace</text>
 <rect x="300" y="66" width="250" height="186" rx="8" fill="#f6f8fa" stroke="#e5e7eb"/>
-<polyline points="312.2,190.5 310.6,186.8 311.4,184.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="312.4,176.1 310.0,167.3 312.0,160.1" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="313.2,159.3 311.0,145.0 313.9,136.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="315.3,141.7 314.3,121.4 318.8,113.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="318.7,124.1 318.8,105.0 326.1,94.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="324.0,106.9 325.4,89.7 335.7,79.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="329.7,94.9 334.3,78.8 347.4,74.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="337.5,85.5 342.4,77.1 360.2,77.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="347.8,82.1 352.9,82.1 373.0,85.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="357.1,85.2 364.9,94.3 384.8,99.1" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="365.6,91.1 373.3,107.2 394.3,117.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="374.6,100.7 383.0,125.6 400.9,135.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="383.7,113.0 389.1,140.4 405.2,157.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="390.7,125.5 395.1,157.8 407.5,177.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="396.2,136.7 399.1,175.1 408.3,196.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="311.8,201.7 312.2,190.5 312.4,176.1 313.2,159.3 315.3,141.7 318.7,124.1 324.0,106.9 329.7,94.9 337.5,85.5 347.8,82.1 357.1,85.2 365.6,91.1 374.6,100.7 383.7,113.0 390.7,125.5 396.2,136.7" fill="none" stroke="#4f46e5" stroke-width="1.6" stroke-opacity="0.7"/>
-<circle cx="312.2" cy="190.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="312.4" cy="176.1" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="313.2" cy="159.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="315.3" cy="141.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="318.7" cy="124.1" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="324.0" cy="106.9" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="329.7" cy="94.9" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="337.5" cy="85.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="347.8" cy="82.1" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="357.1" cy="85.2" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="365.6" cy="91.1" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="374.6" cy="100.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="383.7" cy="113.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="390.7" cy="125.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="396.2" cy="136.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<polyline points="311.8,201.7 310.6,186.8 310.0,167.3 311.0,145.0 314.3,121.4 318.8,105.0 325.4,89.7 334.3,78.8 342.4,77.1 352.9,82.1 364.9,94.3 373.3,107.2 383.0,125.6 389.1,140.4 395.1,157.8 399.1,175.1" fill="none" stroke="#e11d48" stroke-width="1.6" stroke-opacity="0.7"/>
-<rect x="307.3" y="183.5" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="306.7" y="164.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="307.7" y="141.7" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="311.0" y="118.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="315.5" y="101.7" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="322.1" y="86.4" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="331.0" y="75.5" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="339.1" y="73.8" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="349.6" y="78.8" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="361.6" y="91.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="370.0" y="103.9" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="379.7" y="122.3" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="385.8" y="137.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="391.8" y="154.5" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="395.8" y="171.8" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<polyline points="311.8,201.7 311.4,184.2 312.0,160.1 313.9,136.2 318.8,113.6 326.1,94.0 335.7,79.9 347.4,74.0 360.2,77.6 373.0,85.8 384.8,99.1 394.3,117.3 400.9,135.9 405.2,157.0 407.5,177.3 408.3,196.6" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-opacity="0.7"/>
-<path d="M311.4,180.4 L315.2,187.3 L307.6,187.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M312.0,156.3 L315.8,163.1 L308.2,163.1 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M313.9,132.4 L317.7,139.2 L310.1,139.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M318.8,109.8 L322.6,116.6 L315.0,116.6 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M326.1,90.2 L329.9,97.1 L322.3,97.1 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M335.7,76.1 L339.5,83.0 L331.9,83.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M347.4,70.2 L351.2,77.0 L343.7,77.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M360.2,73.8 L364.0,80.7 L356.4,80.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M373.0,82.0 L376.8,88.9 L369.2,88.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M384.8,95.3 L388.6,102.1 L381.0,102.1 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M394.3,113.5 L398.1,120.3 L390.5,120.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M400.9,132.1 L404.7,138.9 L397.1,138.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M405.2,153.2 L409.0,160.0 L401.4,160.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M407.5,173.5 L411.3,180.4 L403.7,180.4 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M408.3,192.8 L412.1,199.6 L404.5,199.6 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<circle cx="311.8" cy="201.7" r="4" fill="#59636e"/>
+<polyline points="312.2,194.3 310.6,190.5 311.5,187.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="312.5,179.4 310.0,170.3 312.1,162.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="313.3,162.1 311.0,147.3 314.0,138.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="315.5,143.9 314.5,122.9 319.1,114.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="319.0,125.7 319.1,106.0 326.6,94.7" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="324.4,108.0 325.9,90.2 336.5,80.1" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="330.3,95.6 335.1,78.9 348.7,74.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="338.3,85.8 343.4,77.2 361.8,77.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="349.0,82.4 354.3,82.3 375.1,86.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="358.7,85.5 366.6,94.9 387.2,99.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="367.4,91.7 375.3,108.3 397.0,118.7" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="376.7,101.5 385.4,127.3 403.8,137.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="311.8,205.9 312.2,194.3 312.5,179.4 313.3,162.1 315.5,143.9 319.0,125.7 324.4,108.0 330.3,95.6 338.3,85.8 349.0,82.4 358.7,85.5 367.4,91.7 376.7,101.5" fill="none" stroke="#4f46e5" stroke-width="1.6" stroke-opacity="0.7"/>
+<circle cx="312.2" cy="194.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="312.5" cy="179.4" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="313.3" cy="162.1" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="315.5" cy="143.9" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="319.0" cy="125.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="324.4" cy="108.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="330.3" cy="95.6" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="338.3" cy="85.8" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="349.0" cy="82.4" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="358.7" cy="85.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="367.4" cy="91.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="376.7" cy="101.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<polyline points="311.8,205.9 310.6,190.5 310.0,170.3 311.0,147.3 314.5,122.9 319.1,106.0 325.9,90.2 335.1,78.9 343.4,77.2 354.3,82.3 366.6,94.9 375.3,108.3 385.4,127.3" fill="none" stroke="#e11d48" stroke-width="1.6" stroke-opacity="0.7"/>
+<rect x="307.3" y="187.2" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="306.7" y="167.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="307.7" y="144.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="311.2" y="119.6" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="315.8" y="102.7" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="322.6" y="86.9" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="331.8" y="75.6" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="340.1" y="73.9" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="351.0" y="79.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="363.3" y="91.6" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="372.0" y="105.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="382.1" y="124.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<polyline points="311.8,205.9 311.5,187.8 312.1,162.9 314.0,138.2 319.1,114.9 326.6,94.7 336.5,80.1 348.7,74.0 361.8,77.8 375.1,86.2 387.2,99.9 397.0,118.7 403.8,137.9" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-opacity="0.7"/>
+<path d="M311.5,184.0 L315.3,190.8 L307.7,190.8 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M312.1,159.1 L315.9,165.9 L308.3,165.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M314.0,134.4 L317.8,141.2 L310.2,141.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M319.1,111.1 L322.9,117.9 L315.3,117.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M326.6,90.9 L330.4,97.7 L322.8,97.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M336.5,76.3 L340.3,83.2 L332.7,83.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M348.7,70.2 L352.5,77.0 L344.9,77.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M361.8,74.0 L365.6,80.8 L358.0,80.8 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M375.1,82.4 L378.9,89.3 L371.3,89.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M387.2,96.1 L391.0,103.0 L383.4,103.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M397.0,114.9 L400.8,121.7 L393.2,121.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M403.8,134.1 L407.6,140.9 L400.0,140.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<circle cx="311.8" cy="205.9" r="4" fill="#59636e"/>
 <text x="300" y="266" font-size="10" font-weight="400" text-anchor="start" fill="#8c959f">side view (Y–Z) · ● start</text>
 <text x="590" y="76" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">distance along the path · dot = waypoint (1/15 s) · dashed = same waypoint</text>
 <line x1="590.0" y1="86" x2="590.0" y2="220" stroke="#eef0f3"/>
 <text x="590.0" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0 mm</text>
-<line x1="702.4" y1="86" x2="702.4" y2="220" stroke="#eef0f3"/>
-<text x="702.443633880583" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">100 mm</text>
-<line x1="814.9" y1="86" x2="814.9" y2="220" stroke="#eef0f3"/>
-<text x="814.8872677611658" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">200 mm</text>
-<line x1="927.3" y1="86" x2="927.3" y2="220" stroke="#eef0f3"/>
-<text x="927.3309016417488" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">300 mm</text>
-<polyline points="601.6,110.0 605.4,150.0 608.0,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="616.4,110.0 625.5,150.0 632.7,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="633.6,110.0 648.5,150.0 657.4,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="651.8,110.0 673.2,150.0 681.4,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="670.3,110.0 690.8,150.0 702.9,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="689.0,110.0 707.8,150.0 720.4,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="702.6,110.0 722.3,150.0 733.9,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="715.2,110.0 731.0,150.0 747.7,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="726.3,110.0 743.0,150.0 763.3,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="736.4,110.0 760.5,150.0 781.5,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="747.0,110.0 776.5,150.0 802.6,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="760.5,110.0 797.9,150.0 822.9,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="776.2,110.0 814.3,150.0 845.1,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="791.0,110.0 833.2,150.0 866.1,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="803.8,110.0 851.4,150.0 885.8,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<line x1="590.0" y1="110" x2="803.8" y2="110" stroke="#4f46e5" stroke-width="2" stroke-opacity="0.35"/>
-<circle cx="601.6" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="616.4" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="633.6" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="651.8" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="670.3" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="689.0" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="702.6" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="715.2" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="726.3" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="736.4" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="747.0" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="760.5" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="776.2" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="791.0" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="803.8" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<text x="813.8043756893439" y="114" font-size="11" font-weight="600" text-anchor="start" fill="#4f46e5">190 mm</text>
-<line x1="590.0" y1="150" x2="851.4" y2="150" stroke="#e11d48" stroke-width="2" stroke-opacity="0.35"/>
-<rect x="601.8" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="621.9" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="644.9" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="669.6" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="687.2" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="704.2" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="718.7" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="727.4" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="739.4" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="756.9" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="772.9" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="794.3" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="810.7" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="829.6" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="847.8" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<text x="861.4028210899237" y="154" font-size="11" font-weight="600" text-anchor="start" fill="#e11d48">232 mm</text>
-<line x1="590.0" y1="190" x2="885.8" y2="190" stroke="#0f766e" stroke-width="2" stroke-opacity="0.35"/>
-<path d="M608.0,185.9 L612.1,193.3 L603.8,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M632.7,185.9 L636.9,193.3 L628.6,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M657.4,185.9 L661.5,193.3 L653.3,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M681.4,185.9 L685.5,193.3 L677.3,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M702.9,185.9 L707.0,193.3 L698.7,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M720.4,185.9 L724.5,193.3 L716.2,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M733.9,185.9 L738.1,193.3 L729.8,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M747.7,185.9 L751.8,193.3 L743.5,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M763.3,185.9 L767.4,193.3 L759.2,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M781.5,185.9 L785.7,193.3 L777.4,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M802.6,185.9 L806.8,193.3 L798.5,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M822.9,185.9 L827.0,193.3 L818.7,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M845.1,185.9 L849.2,193.3 L840.9,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M866.1,185.9 L870.2,193.3 L861.9,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M885.8,185.9 L890.0,193.3 L881.7,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<text x="895.8376154922012" y="194" font-size="11" font-weight="600" text-anchor="start" fill="#0f766e">263 mm</text>
-<text x="960" y="54" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">190–263 mm per chunk · spread 13%</text>
+<line x1="710.5" y1="86" x2="710.5" y2="220" stroke="#eef0f3"/>
+<text x="710.5297457712852" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">100 mm</text>
+<line x1="831.1" y1="86" x2="831.1" y2="220" stroke="#eef0f3"/>
+<text x="831.0594915425703" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">200 mm</text>
+<line x1="951.6" y1="86" x2="951.6" y2="220" stroke="#eef0f3"/>
+<text x="951.5892373138554" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">300 mm</text>
+<polyline points="602.4,110.0 606.5,150.0 609.3,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="618.3,110.0 628.0,150.0 635.8,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="636.8,110.0 652.7,150.0 662.3,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="656.3,110.0 679.2,150.0 688.0,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="676.1,110.0 698.0,150.0 711.0,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="696.1,110.0 716.2,150.0 729.7,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="710.7,110.0 731.9,150.0 744.3,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="724.2,110.0 741.1,150.0 759.0,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="736.1,110.0 754.0,150.0 775.8,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="746.9,110.0 772.8,150.0 795.3,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="758.3,110.0 789.9,150.0 817.9,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="772.8,110.0 812.8,150.0 839.6,190.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<line x1="590.0" y1="110" x2="772.8" y2="110" stroke="#4f46e5" stroke-width="2" stroke-opacity="0.35"/>
+<circle cx="602.4" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="618.3" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="636.8" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="656.3" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="676.1" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="696.1" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="710.7" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="724.2" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="736.1" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="746.9" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="758.3" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="772.8" cy="110.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<text x="782.7523081224224" y="114" font-size="11" font-weight="600" text-anchor="start" fill="#4f46e5">152 mm</text>
+<line x1="590.0" y1="150" x2="812.8" y2="150" stroke="#e11d48" stroke-width="2" stroke-opacity="0.35"/>
+<rect x="602.9" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="624.4" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="649.1" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="675.6" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="694.4" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="712.6" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="728.3" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="737.5" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="750.4" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="769.2" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="786.3" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="809.2" y="146.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<text x="822.8013465362799" y="154" font-size="11" font-weight="600" text-anchor="start" fill="#e11d48">185 mm</text>
+<line x1="590.0" y1="190" x2="839.6" y2="190" stroke="#0f766e" stroke-width="2" stroke-opacity="0.35"/>
+<path d="M609.3,185.9 L613.4,193.3 L605.1,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M635.8,185.9 L639.9,193.3 L631.7,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M662.3,185.9 L666.4,193.3 L658.1,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M688.0,185.9 L692.1,193.3 L683.8,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M711.0,185.9 L715.1,193.3 L706.9,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M729.7,185.9 L733.9,193.3 L725.6,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M744.3,185.9 L748.4,193.3 L740.1,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M759.0,185.9 L763.2,193.3 L754.9,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M775.8,185.9 L779.9,193.3 L771.6,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M795.3,185.9 L799.4,193.3 L791.2,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M817.9,185.9 L822.1,193.3 L813.8,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M839.6,185.9 L843.8,193.3 L835.5,193.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<text x="849.6184958524524" y="194" font-size="11" font-weight="600" text-anchor="start" fill="#0f766e">207 mm</text>
+<text x="960" y="54" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">152–207 mm in 0.8 s · spread 13%</text>
 <rect x="300" y="276" width="660" height="38" rx="10" fill="#eef4ff" stroke="#bfd2f8"/>
 <text x="630" y="300" font-size="13" font-weight="600" text-anchor="middle" fill="#1d4ed8">Learned speed prior → retime every demonstration to its q50 (median) clock</text>
 <path d="M630,262 L630,274 M624,268 L630,275 L636,268" stroke="#1d4ed8" stroke-width="1.6" fill="none"/>
@@ -284,149 +261,125 @@
 <text x="300" y="338" font-size="15" font-weight="600" text-anchor="start" fill="#1f2328">Tempo-aligned</text>
 <text x="300" y="356" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">labels on the learned q50 clock</text>
 <rect x="300" y="368" width="250" height="186" rx="8" fill="#f6f8fa" stroke="#e5e7eb"/>
-<polyline points="312.3,480.8 310.0,478.9 311.4,480.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="314.9,447.3 311.1,446.0 312.6,448.4" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="322.4,413.8 317.3,412.2 318.9,415.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="334.1,391.0 327.5,388.4 330.3,388.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="352.6,385.0 343.0,379.3 347.0,376.1" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="371.2,398.7 360.6,391.4 367.4,383.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="388.9,424.0 377.3,416.3 385.8,402.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="401.7,452.8 391.4,448.7 398.5,429.5" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="408.3,481.9 399.6,480.4 405.1,458.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="409.9,506.1 401.8,506.4 407.8,486.7" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="409.5,523.7 400.5,526.1 408.2,509.4" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="409.3,535.5 396.1,540.7 406.9,527.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="405.8,543.8 392.7,546.0 404.6,540.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="404.5,542.5 389.1,544.1 401.5,543.7" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="401.9,532.7 388.0,540.8 398.4,539.5" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="311.8,503.7 312.3,480.8 314.9,447.3 322.4,413.8 334.1,391.0 352.6,385.0 371.2,398.7 388.9,424.0 401.7,452.8 408.3,481.9 409.9,506.1 409.5,523.7 409.3,535.5 405.8,543.8 404.5,542.5 401.9,532.7" fill="none" stroke="#4f46e5" stroke-width="1.6" stroke-opacity="0.7"/>
-<circle cx="312.3" cy="480.8" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="314.9" cy="447.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="322.4" cy="413.8" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="334.1" cy="391.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="352.6" cy="385.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="371.2" cy="398.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="388.9" cy="424.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="401.7" cy="452.8" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="408.3" cy="481.9" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="409.9" cy="506.1" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="409.5" cy="523.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="409.3" cy="535.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="405.8" cy="543.8" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="404.5" cy="542.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="401.9" cy="532.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<polyline points="311.8,503.7 310.0,478.9 311.1,446.0 317.3,412.2 327.5,388.4 343.0,379.3 360.6,391.4 377.3,416.3 391.4,448.7 399.6,480.4 401.8,506.4 400.5,526.1 396.1,540.7 392.7,546.0 389.1,544.1 388.0,540.8" fill="none" stroke="#e11d48" stroke-width="1.6" stroke-opacity="0.7"/>
-<rect x="306.7" y="475.6" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="307.8" y="442.7" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="314.0" y="408.9" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="324.2" y="385.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="339.7" y="376.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="357.3" y="388.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="374.0" y="413.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="388.1" y="445.4" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="396.3" y="477.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="398.5" y="503.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="397.2" y="522.8" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="392.8" y="537.4" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="389.4" y="542.7" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="385.8" y="540.8" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="384.7" y="537.5" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<polyline points="311.8,503.7 311.4,480.8 312.6,448.4 318.9,415.3 330.3,388.3 347.0,376.1 367.4,383.6 385.8,402.8 398.5,429.5 405.1,458.9 407.8,486.7 408.2,509.4 406.9,527.0 404.6,540.0 401.5,543.7 398.4,539.5" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-opacity="0.7"/>
-<path d="M311.4,477.0 L315.2,483.8 L307.6,483.8 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M312.6,444.7 L316.4,451.5 L308.8,451.5 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M318.9,411.6 L322.7,418.4 L315.1,418.4 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M330.3,384.5 L334.1,391.3 L326.5,391.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M347.0,372.3 L350.8,379.2 L343.2,379.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M367.4,379.8 L371.2,386.7 L363.6,386.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M385.8,399.0 L389.6,405.9 L382.0,405.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M398.5,425.7 L402.3,432.5 L394.7,432.5 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M405.1,455.1 L408.9,461.9 L401.4,461.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M407.8,482.9 L411.6,489.7 L404.0,489.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M408.2,505.6 L412.0,512.5 L404.4,512.5 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M406.9,523.2 L410.7,530.0 L403.1,530.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M404.6,536.2 L408.4,543.0 L400.8,543.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M401.5,539.9 L405.3,546.8 L397.7,546.8 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M398.4,535.7 L402.2,542.6 L394.6,542.6 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<circle cx="311.8" cy="503.7" r="4" fill="#59636e"/>
+<polyline points="312.4,484.2 310.0,482.3 311.5,484.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="315.0,449.6 311.1,448.3 312.7,450.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="322.8,415.0 317.5,413.3 319.2,416.6" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="334.9,391.4 328.1,388.8 331.0,388.7" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="354.0,385.3 344.0,379.4 348.2,376.1" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="373.1,399.4 362.3,391.9 369.3,383.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="391.4,425.6 379.5,417.6 388.3,403.7" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="404.6,455.3 394.0,451.1 401.4,431.2" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="411.5,485.3 402.5,483.8 408.2,461.5" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="413.1,510.3 404.8,510.6 410.9,490.3" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="412.7,528.5 403.4,530.9 411.4,513.8" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="412.5,540.7 398.8,546.0 410.1,531.9" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="311.8,507.9 312.4,484.2 315.0,449.6 322.8,415.0 334.9,391.4 354.0,385.3 373.1,399.4 391.4,425.6 404.6,455.3 411.5,485.3 413.1,510.3 412.7,528.5 412.5,540.7" fill="none" stroke="#4f46e5" stroke-width="1.6" stroke-opacity="0.7"/>
+<circle cx="312.4" cy="484.2" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="315.0" cy="449.6" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="322.8" cy="415.0" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="334.9" cy="391.4" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="354.0" cy="385.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="373.1" cy="399.4" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="391.4" cy="425.6" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="404.6" cy="455.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="411.5" cy="485.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="413.1" cy="510.3" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="412.7" cy="528.5" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="412.5" cy="540.7" r="3.3" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<polyline points="311.8,507.9 310.0,482.3 311.1,448.3 317.5,413.3 328.1,388.8 344.0,379.4 362.3,391.9 379.5,417.6 394.0,451.1 402.5,483.8 404.8,510.6 403.4,530.9 398.8,546.0" fill="none" stroke="#e11d48" stroke-width="1.6" stroke-opacity="0.7"/>
+<rect x="306.7" y="479.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="307.8" y="445.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="314.2" y="410.0" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="324.8" y="385.5" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="340.7" y="376.1" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="359.0" y="388.6" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="376.2" y="414.3" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="390.7" y="447.8" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="399.2" y="480.5" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="401.5" y="507.3" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="400.1" y="527.6" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="395.5" y="542.7" width="6.6" height="6.6" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<polyline points="311.8,507.9 311.5,484.2 312.7,450.8 319.2,416.6 331.0,388.7 348.2,376.1 369.3,383.9 388.3,403.7 401.4,431.2 408.2,461.5 410.9,490.3 411.4,513.8 410.1,531.9" fill="none" stroke="#0f766e" stroke-width="1.6" stroke-opacity="0.7"/>
+<path d="M311.5,480.4 L315.3,487.2 L307.7,487.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M312.7,447.0 L316.5,453.8 L308.9,453.8 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M319.2,412.8 L323.0,419.7 L315.4,419.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M331.0,384.9 L334.8,391.7 L327.2,391.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M348.2,372.3 L352.0,379.2 L344.4,379.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M369.3,380.1 L373.1,386.9 L365.5,386.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M388.3,399.9 L392.1,406.7 L384.5,406.7 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M401.4,427.4 L405.1,434.3 L397.6,434.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M408.2,457.8 L412.0,464.6 L404.4,464.6 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M410.9,486.5 L414.7,493.3 L407.1,493.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M411.4,510.0 L415.2,516.8 L407.6,516.8 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M410.1,528.1 L413.9,534.9 L406.3,534.9 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<circle cx="311.8" cy="507.9" r="4" fill="#59636e"/>
 <text x="300" y="568" font-size="10" font-weight="400" text-anchor="start" fill="#8c959f">side view (Y–Z) · ● start</text>
 <text x="590" y="378" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">distance along the path · dot = waypoint (1/15 s) · dashed = same waypoint</text>
 <line x1="590.0" y1="388" x2="590.0" y2="522" stroke="#eef0f3"/>
 <text x="590.0" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0 mm</text>
-<line x1="702.4" y1="388" x2="702.4" y2="522" stroke="#eef0f3"/>
-<text x="702.443633880583" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">100 mm</text>
-<line x1="814.9" y1="388" x2="814.9" y2="522" stroke="#eef0f3"/>
-<text x="814.8872677611658" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">200 mm</text>
-<line x1="927.3" y1="388" x2="927.3" y2="522" stroke="#eef0f3"/>
-<text x="927.3309016417488" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">300 mm</text>
-<polyline points="613.6,412.0 615.6,452.0 613.5,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="648.1,412.0 649.5,452.0 646.8,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="683.5,412.0 685.1,452.0 681.6,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="709.9,412.0 711.6,452.0 711.8,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="729.8,412.0 730.2,452.0 733.0,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="753.5,412.0 752.3,452.0 755.5,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="785.3,412.0 783.2,452.0 782.8,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="817.6,412.0 819.5,452.0 813.1,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="848.2,412.0 853.0,452.0 844.1,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="873.2,412.0 879.8,452.0 872.8,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="891.4,412.0 900.0,452.0 896.1,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="903.8,412.0 915.6,452.0 914.2,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="913.1,412.0 922.2,452.0 927.8,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="915.0,412.0 926.5,452.0 933.6,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<polyline points="925.4,412.0 930.2,452.0 939.1,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
-<line x1="590.0" y1="412" x2="925.4" y2="412" stroke="#4f46e5" stroke-width="2" stroke-opacity="0.35"/>
-<circle cx="613.6" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="648.1" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="683.5" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="709.9" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="729.8" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="753.5" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="785.3" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="817.6" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="848.2" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="873.2" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="891.4" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="903.8" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<line x1="710.5" y1="388" x2="710.5" y2="522" stroke="#eef0f3"/>
+<text x="710.5297457712852" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">100 mm</text>
+<line x1="831.1" y1="388" x2="831.1" y2="522" stroke="#eef0f3"/>
+<text x="831.0594915425703" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">200 mm</text>
+<line x1="951.6" y1="388" x2="951.6" y2="522" stroke="#eef0f3"/>
+<text x="951.5892373138554" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">300 mm</text>
+<polyline points="615.3,412.0 617.4,452.0 615.2,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="652.3,412.0 653.8,452.0 650.8,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="690.2,412.0 691.9,452.0 688.2,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="718.5,412.0 720.3,452.0 720.5,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="739.9,412.0 740.3,452.0 743.3,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="765.2,412.0 763.9,452.0 767.4,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="799.3,412.0 797.1,452.0 796.6,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="833.9,412.0 836.0,452.0 829.2,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="866.7,412.0 872.0,452.0 862.4,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="893.5,412.0 900.6,452.0 893.2,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="913.1,412.0 922.3,452.0 918.1,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<polyline points="926.3,412.0 939.1,452.0 937.5,492.0" fill="none" stroke="#9ca3af" stroke-width="0.9" stroke-dasharray="3 3"/>
+<line x1="590.0" y1="412" x2="926.3" y2="412" stroke="#4f46e5" stroke-width="2" stroke-opacity="0.35"/>
+<circle cx="615.3" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="652.3" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="690.2" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="718.5" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="739.9" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="765.2" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="799.3" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="833.9" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="866.7" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<circle cx="893.5" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
 <circle cx="913.1" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="915.0" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<circle cx="925.4" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
-<text x="935.3971754004084" y="416" font-size="11" font-weight="600" text-anchor="start" fill="#4f46e5">298 mm</text>
-<line x1="590.0" y1="452" x2="930.2" y2="452" stroke="#e11d48" stroke-width="2" stroke-opacity="0.35"/>
-<rect x="612.0" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="645.9" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="681.5" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="708.0" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="726.6" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="748.7" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="779.6" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="815.9" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="849.4" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="876.2" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="896.4" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="912.0" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="918.6" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="922.9" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<rect x="926.6" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
-<text x="940.2380849919412" y="456" font-size="11" font-weight="600" text-anchor="start" fill="#e11d48">303 mm</text>
-<line x1="590.0" y1="492" x2="939.1" y2="492" stroke="#0f766e" stroke-width="2" stroke-opacity="0.35"/>
-<path d="M613.5,487.9 L617.7,495.3 L609.4,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M646.8,487.9 L650.9,495.3 L642.6,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M681.6,487.9 L685.8,495.3 L677.5,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M711.8,487.9 L715.9,495.3 L707.6,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M733.0,487.9 L737.2,495.3 L728.9,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M755.5,487.9 L759.6,495.3 L751.4,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M782.8,487.9 L786.9,495.3 L778.6,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M813.1,487.9 L817.3,495.3 L809.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M844.1,487.9 L848.2,495.3 L840.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M872.8,487.9 L877.0,495.3 L868.7,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M896.1,487.9 L900.2,495.3 L892.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M914.2,487.9 L918.3,495.3 L910.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M927.8,487.9 L931.9,495.3 L923.6,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M933.6,487.9 L937.8,495.3 L929.5,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<path d="M939.1,487.9 L943.2,495.3 L934.9,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
-<text x="949.0566037735848" y="496" font-size="11" font-weight="600" text-anchor="start" fill="#0f766e">310 mm</text>
-<text x="960" y="356" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">298–310 mm per chunk · spread 2%</text>
+<circle cx="926.3" cy="412.0" r="3.6" fill="#fff" stroke="#4f46e5" stroke-width="1.8"/>
+<text x="936.3134571709862" y="416" font-size="11" font-weight="600" text-anchor="start" fill="#4f46e5">279 mm</text>
+<line x1="590.0" y1="452" x2="939.1" y2="452" stroke="#e11d48" stroke-width="2" stroke-opacity="0.35"/>
+<rect x="613.8" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="650.2" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="688.3" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="716.7" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="736.7" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="760.3" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="793.5" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="832.4" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="868.4" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="897.0" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="918.7" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<rect x="935.5" y="448.4" width="7.2" height="7.2" fill="#fff" stroke="#e11d48" stroke-width="1.8"/>
+<text x="949.0566037735849" y="456" font-size="11" font-weight="600" text-anchor="start" fill="#e11d48">290 mm</text>
+<line x1="590.0" y1="492" x2="937.5" y2="492" stroke="#0f766e" stroke-width="2" stroke-opacity="0.35"/>
+<path d="M615.2,487.9 L619.4,495.3 L611.1,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M650.8,487.9 L655.0,495.3 L646.7,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M688.2,487.9 L692.4,495.3 L684.1,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M720.5,487.9 L724.7,495.3 L716.4,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M743.3,487.9 L747.5,495.3 L739.2,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M767.4,487.9 L771.5,495.3 L763.3,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M796.6,487.9 L800.8,495.3 L792.5,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M829.2,487.9 L833.3,495.3 L825.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M862.4,487.9 L866.5,495.3 L858.2,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M893.2,487.9 L897.3,495.3 L889.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M918.1,487.9 L922.3,495.3 L914.0,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<path d="M937.5,487.9 L941.6,495.3 L933.3,495.3 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
+<text x="947.4793522871134" y="496" font-size="11" font-weight="600" text-anchor="start" fill="#0f766e">288 mm</text>
+<text x="960" y="356" font-size="12" font-weight="600" text-anchor="end" fill="#1f2328">279–290 mm in 0.8 s · spread 2%</text>
 </svg>
-<figcaption>Real labels from the 412-demonstration cup dataset: the same three observations and their full 15-waypoint chunks before and after retiming, identical scales, starts moved to a common point; grey dashed lines join the same waypoint across the three demonstrations. Spread = standard deviation / mean of the distance covered.</figcaption>
+<figcaption>Real labels from the 412-demonstration cup dataset: the same three observations and the same 12-waypoint prefix of their chunks before and after retiming, identical scales, starts moved to a common point; grey dashed lines join the same waypoint across the three demonstrations. Spread = standard deviation / mean of the distance covered.</figcaption>
 </figure>
 </div></section>
 <section id="inference-time" class="tempo"><div class="container">

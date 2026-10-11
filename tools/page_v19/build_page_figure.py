@@ -15,7 +15,7 @@ def marker(shape, x, y, c, r=4.2):
     h = r * 1.15; return f'<path d="M{x:.1f},{y - h:.1f} L{x + h:.1f},{y + h * 0.8:.1f} L{x - h:.1f},{y + h * 0.8:.1f} Z" fill="#fff" stroke="{c}" stroke-width="1.8"/>'
 
 def build(npz, img_urls):
-    z = np.load(npz); n = z["raw_full_xyz_mm"].shape[1] - 1          # the whole 15-step chunk (1.0 s at 15 Hz)
+    z = np.load(npz); n = int(z["shown_prefix"])                      # 12 of the 15 waypoints (0.8 s): the tail overlaps
     raw = z["raw_full_xyz_mm"][:, :n + 1] - z["raw_full_xyz_mm"][:, :1]   # demos A, B, C = ep164, ep167, ep49
     lrn = z["learned_q50_full_xyz_mm"][:, :n + 1] - z["learned_q50_full_xyz_mm"][:, :1]
     sgn = 1 if np.mean(raw[:, -1, 1]) >= 0 else -1                     # motion to the right
@@ -67,13 +67,13 @@ def build(npz, img_urls):
     m = lambda a: np.linalg.norm(np.diff(a, axis=1), axis=2).sum(1)
     cv = lambda v: np.std(v) / np.mean(v) * 100
     rr, ll = m(raw), m(lrn)
-    row(raw, 70, "Original timing", "raw labels: the operator's pace", f"{rr.min():.0f}–{rr.max():.0f} mm per chunk · spread {cv(rr):.0f}%")
+    row(raw, 70, "Original timing", "raw labels: the operator's pace", f"{rr.min():.0f}–{rr.max():.0f} mm in 0.8 s · spread {cv(rr):.0f}%")
     # speed prior box between the rows
     o.append(f'<rect x="300" y="276" width="660" height="38" rx="10" fill="#eef4ff" stroke="#bfd2f8"/>')
     T("Learned speed prior → retime every demonstration to its q50 (median) clock", 630, 300, 13, 600, "middle", "#1d4ed8")
     o.append('<path d="M630,262 L630,274 M624,268 L630,275 L636,268" stroke="#1d4ed8" stroke-width="1.6" fill="none"/>')
     o.append('<path d="M630,316 L630,330 M624,324 L630,331 L636,324" stroke="#1d4ed8" stroke-width="1.6" fill="none"/>')
-    row(lrn, 372, "Tempo-aligned", "labels on the learned q50 clock", f"{ll.min():.0f}–{ll.max():.0f} mm per chunk · spread {cv(ll):.0f}%")
+    row(lrn, 372, "Tempo-aligned", "labels on the learned q50 clock", f"{ll.min():.0f}–{ll.max():.0f} mm in 0.8 s · spread {cv(ll):.0f}%")
     o.append("</svg>")
     return "\n".join(o), dict(raw_mm=rr.round(1).tolist(), aligned_mm=ll.round(1).tolist(), cv_raw=round(cv(rr), 1), cv_aligned=round(cv(ll), 1))
 

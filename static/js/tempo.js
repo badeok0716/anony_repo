@@ -19,6 +19,12 @@
     });
   });
 
+  /* ---------- ladder videos: replay from the start ---------- */
+  document.querySelectorAll(".ladder").forEach((fig) => {
+    const v = fig.querySelector("video"), b = fig.querySelector(".replay");
+    if (v && b) b.addEventListener("click", () => { v.currentTime = 0; v.play().catch(() => {}); });
+  });
+
   /* ---------- 2. chunk explorer ---------- */
   const COLORS = { q50: "#0ea5e9", q90: "#8b5cf6", q95: "#16a34a", q99: "#d97706" };
   const STOPS = [50, 90, 95, 99];

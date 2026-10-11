@@ -17,7 +17,7 @@ for old in prev['selected_candidates']:
     raw = np.stack([np.interp(times[row] + np.arange(1, 16) / 15, t, q[:, k]) for k in range(8)], -1); al = np.asarray(actions[row])
     a = fk(np.vstack([q[start, :7], raw[:, :7]])) * 1000; b = fk(np.vstack([q[start, :7], al[:, :7]])) * 1000
     L = lambda x: float(np.linalg.norm(np.diff(x, axis=0), axis=1).sum())
-    out[ei] = dict(raw15=L(a), aligned15=L(b), valid=bool(valid[row].all()), grip_min=float(min(raw[:, 7].min(), al[:, 7].min())),
+    out[ei] = dict(raw15=L(a), aligned15=L(b), valid=bool(valid[row].all()), grip_min=float(min(raw[:, 7].min(), al[:, 7].min())), grip_min12=float(min(raw[:12, 7].min(), al[:12, 7].min())),
                    raw_xyz=(a - a[0]).tolist(), aligned_xyz=(b - b[0]).tolist())
     print(f"ep {ei:3d}: raw15 {L(a):6.1f} mm  aligned15 {L(b):6.1f} mm  valid {valid[row].all()}  gripper min {out[ei]['grip_min']:.2f}")
 json.dump(out, open('six_full15.json', 'w'))

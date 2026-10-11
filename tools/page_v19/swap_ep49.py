@@ -6,7 +6,7 @@ six = json.load(open('six_full15.json')); eps = json.load(open(SIDECAR / 'episod
 times = np.load(SIDECAR / 'source_times.npy', mmap_mode='r')
 sel = [164, 167, 49]
 np.savez('page_arrays.npz', raw_full_xyz_mm=np.array([six[str(e)]['raw_xyz'] for e in sel]),
-         learned_q50_full_xyz_mm=np.array([six[str(e)]['aligned_xyz'] for e in sel]), episodes=np.array(sel), shown_prefix=15)
+         learned_q50_full_xyz_mm=np.array([six[str(e)]['aligned_xyz'] for e in sel]), episodes=np.array(sel), shown_prefix=12)
 # wrist frame for ep49 at its anchor (the anchor row is recomputed exactly as in six_full15.py)
 sys.path.insert(0, '/home/always216/ROBOT/analysis/tempo_viz_20261004'); from v04_fk import fk
 prev = json.load(open('/home/always216/ROBOT/analysis/training_tempo_viz_20261011/output/manifest.json'))
