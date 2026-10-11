@@ -125,10 +125,7 @@
       if (pts.length > 1) svg.appendChild(el("polyline", { points: pts.map((p) => p.join(",")).join(" "), fill: "none", stroke: rn.col,
         "stroke-width": u * 0.5, "stroke-opacity": idx ? 0.9 : 0.6, "stroke-linecap": "round", "stroke-linejoin": "round" }));
       D.tick_t.forEach((tt, i) => { if (tt >= b0 && tt <= b1)
-        svg.appendChild(el("circle", { cx: D.ticks[i][0], cy: D.ticks[i][1], r: u * 0.42, fill: "#fff", stroke: rn.col, "stroke-width": u * 0.18 })); });
-      const pl = planOf(rn.tc);
-      if (!rn.done && pl && D.chunks[pl]) D.chunks[pl].forEach((p) =>
-        svg.appendChild(el("circle", { cx: p[0], cy: p[1], r: u * 0.8, fill: "none", stroke: rn.col, "stroke-width": u * 0.22, "stroke-opacity": 0.75 })));
+        svg.appendChild(el("circle", { cx: D.ticks[i][0], cy: D.ticks[i][1], r: u * 0.6, fill: "#fff", stroke: rn.col, "stroke-width": u * 0.24 })); });
     });
     runners.forEach((rn) => { const p = pointAt(rn.tc);
       svg.appendChild(el("circle", { cx: p[0], cy: p[1], r: u * 1.6, fill: rn.col, stroke: "#111827", "stroke-width": u * 0.3 })); });
