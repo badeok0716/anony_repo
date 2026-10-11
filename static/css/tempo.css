@@ -70,10 +70,10 @@
 @media (max-width: 760px) { .train-figure { overflow-x: auto; } .train-fig { min-width: 720px; } }
 
 .ladder video { display: block; width: 100%; height: auto; border-radius: 10px; background: #101118; }
-.ladder .demo-caption { text-align: left; }
+.ladder .demo-caption { max-width: none; text-align: center; }
+.ladder .result { white-space: nowrap; color: var(--text); font-weight: 600; }
+.ladder .result .ok { color: #15803d; } .ladder .result .no, .ladder .result .warn { color: #dc2626; } .ladder .result .good { color: #15803d; }
+@media (max-width: 1000px) { .ladder .result { white-space: normal; } }
 .ladder .warn { color: #dc2626; }
 .ladder code { font-size: 0.85em; background: var(--panel); padding: 0 4px; border-radius: 4px; }
 .ladder-note { font-size: 0.85rem; color: var(--faint); }
-.ladder-bar { display: flex; justify-content: flex-end; margin: 4px 0 0; }
-.ladder-bar .replay { font: inherit; font-size: 0.85rem; color: var(--muted); background: none; border: 1px solid var(--rule); border-radius: 999px; padding: 2px 12px; cursor: pointer; }
-.ladder-bar .replay:hover { color: var(--text); border-color: var(--muted); }
