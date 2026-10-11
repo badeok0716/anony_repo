@@ -1,6 +1,6 @@
 /* Inference-time tempo section (rebuilt 2026-10-11). Light theme, uses style.css variables. */
 .tempo { padding: 48px 0 56px; border-top: 1px solid var(--rule); }
-.tempo-intro { max-width: var(--narrow); margin: 0 auto 18px; text-align: justify; hyphens: auto; }
+.tempo-intro { max-width: var(--narrow); margin: 0 auto 18px; text-align: justify; hyphens: manual; text-wrap: pretty; }
 .tempo-figure { margin: 8px auto 28px; max-width: 1000px; }
 .tempo-fig { display: block; width: 100%; height: auto; font-family: inherit; }
 .tempo-figure figcaption { text-align: center; color: var(--muted); font-size: 0.95rem; margin-top: 4px; text-wrap: balance; }

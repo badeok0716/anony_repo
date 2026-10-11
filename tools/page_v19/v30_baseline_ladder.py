@@ -17,22 +17,26 @@ RED, GREEN, AMBER, BLUE = (220, 38, 38), (34, 160, 70), (217, 119, 6), (59, 130,
 # when the task completes, paper rule: last cup / towel fold / paper ball released; None = no success), cut (clip s),
 # end (badge shown at the clip end when there is no success).  Ours: done = v25 completion - lag (cup 3.162, towel 4.487,
 # trash 48.26 s since policy start). Cup baselines without logs: last cup released, read off the video frames.
+# 2026-10-12: every clip starts at the frame where its arm first moves (checked by eye on v31_onset_sheet.py contact
+# sheets) and every timer starts at 0.0 there; clips are cut at the task timeout (cup/towel 10 s, trash 60 s).
+# Ours: done = paper completion (since policy start) - policy time of the onset frame (cup clip starts at 0.264 s,
+# towel 0.451 s + 1 frame, trash frame 82 = 0.195 s; logs show the arm moving 0.18-0.19 s after the policy start).
 TASKS = {
- "cup": dict(portrait=True, panels=[
-   dict(title="Default 1× + PD", path=REP + "/cup/cup(w／o control,tempo align).MOV", done=8.2),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Cup_demo/cup_raw_1x_high_gain_pd_failure.mov", end=("failure", RED)),
-   dict(title="Default 1× + our controller", path=DEMO + "/Cup_demo/cup_raw_1x_control.mov", done=4.2),
-   dict(title="Ours (q99) + our controller", path=O + "/orig/cup_sdr30.mp4", trim=0, off=0.264, done=3.162 - 0.264)]),
- "towel": dict(portrait=True, panels=[
-   dict(title="Default 1× + PD", path=REP + "/towel/towel(w／o control, tempo align)", cx=0.30, crop_aspect=0.80, end=("failure", RED)),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", end=("failure · stopped", RED)),
-   dict(title="Default 1× + our controller", path=DEMO + "/Towel_demo/towel_raw_1x_failure.mov", cut=10.0, end=("failure · 10 s timeout", RED)),
-   dict(title="Ours (q95) + our controller", path=O + "/orig/towel_30.mp4", trim=0, off=0.451, done=4.487 - 0.451)]),
- "trash": dict(portrait=False, panels=[
+ "cup": dict(portrait=True, timeout=10.0, panels=[
+   dict(title="Default 1× + PD", path=REP + "/cup/cup(w／o control,tempo align).MOV", trim=64, done=8.2),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Cup_demo/cup_raw_1x_high_gain_pd_failure.mov", trim=14, end=("failure", RED)),
+   dict(title="Default 1× + our controller", path=DEMO + "/Cup_demo/cup_raw_1x_control.mov", trim=0, done=4.2),
+   dict(title="Ours (q99) + our controller", path=O + "/orig/cup_sdr30.mp4", trim=0, done=3.162 - 0.264)]),
+ "towel": dict(portrait=True, timeout=10.0, panels=[
+   dict(title="Default 1× + PD", path=REP + "/towel/towel(w／o control, tempo align)", cx=0.30, crop_aspect=0.80, trim=79, end=("failure", RED)),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", trim=13, end=("failure · joint acc limit (red light)", RED)),
+   dict(title="Default 1× + our controller", path=DEMO + "/Towel_demo/towel_raw_1x_failure.mov", trim=1, end=("failure", RED)),
+   dict(title="Ours (q95) + our controller", path=O + "/orig/towel_30.mp4", trim=1, done=4.487 - 0.451 - 1 / 30)]),
+ "trash": dict(portrait=False, timeout=60.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/trash/trash(w／o control, tempo align)", trim=82, end=("0 / 15", RED)),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Trash_demo/trash_raw_1x_high_gain_pd_reflex_red_light.mov", end=("0 / 15 · reflex stop, red light", RED)),
-   dict(title="Default 1× + our controller", path=DEMO + "/Trash_demo/trash_raw_1x_control.mov", end=("9 / 15", AMBER)),
-   dict(title="Ours (q99) + our controller", path=O + "/drive/trash_ours.mp4", trim=80, off=0.128, done=48.26 - 0.128, done_text="15 / 15")]),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Trash_demo/trash_raw_1x_high_gain_pd_reflex_red_light.mov", trim=0, end=("0 / 15 · reflex stop (red light)", RED)),
+   dict(title="Default 1× + our controller", path=DEMO + "/Trash_demo/trash_raw_1x_control.mov", trim=0, end=("9 / 15", AMBER)),
+   dict(title="Ours (q99) + our controller", path=O + "/drive/trash_ours.mp4", trim=82, done=48.26 - 0.195, done_text="15 / 15")]),
 }
 
 def onset(frames, k=3):
@@ -80,7 +84,10 @@ def main(task, out):
     clips = []
     for pn in cfg["panels"]:
         c = sdr_frames(pn["path"], W, H, pn.get("cx", 0.5), pn.get("crop_aspect"), pn.get("trim"))
-        if pn.get("cut"): c = c[:int(round(pn["cut"] * FPS)) + 1]
+        lim = int(round(cfg["timeout"] * FPS)) + 1
+        if len(c) > lim:                                          # timeout: cut, and say so on a failure badge
+            c = c[:lim]
+            if pn.get("end") and pn.get("done") is None: pn["end"] = (pn["end"][0] + f" · {cfg['timeout']:g} s timeout", pn["end"][1])
         clips.append(c)
     n = max(len(c) for c in clips) + FPS                         # +1 s hold
     head, gap = 40, 12

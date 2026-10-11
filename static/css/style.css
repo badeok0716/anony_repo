@@ -193,7 +193,8 @@ section { padding: 28px 0; }
 .abstract p {
   margin: 0;
   text-align: justify;
-  hyphens: auto;
+  hyphens: manual;
+  text-wrap: pretty;
 }
 .abstract a { overflow-wrap: anywhere; }
 

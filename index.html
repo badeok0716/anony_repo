@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
-<link rel="stylesheet" href="static/css/style.css?v=d8124012">
-<link rel="stylesheet" href="static/css/tempo.css?v=14">
+<link rel="stylesheet" href="static/css/style.css?v=d8124013">
+<link rel="stylesheet" href="static/css/tempo.css?v=15">
 <script src="static/js/tempo.js?v=10" defer></script>
 </head>
 <body>
@@ -48,18 +48,18 @@
 
       <figure class="demo ladder">
         <h3 class="demo-title">Trash cleanup</h3>
-        <video src="static/tempo/ladder_trash.mp4" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.26 s)</span></span><br>The high-gain PD run ends in a <b class="warn">safety stop (red lights)</b>: stiff tracking asks for more power and speed than the arm allows.<br>Our controller keeps every chunk within the arm's limits.</figcaption>
+        <video src="static/tempo/ladder_trash.mp4?v=2" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.06 s)</span></span><br>The high-gain PD run ends in a <b class="warn">reflex stop (red light)</b>: stiff tracking asks for more power and speed than the arm allows.<br>Our controller keeps every chunk within the arm's limits.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Cup stacking</h3>
-        <video src="static/tempo/ladder_cup.mp4" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.2 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.2 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
+        <video src="static/tempo/ladder_cup.mp4?v=2" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.2 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.2 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 2.90 s</span></span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
-        <video src="static/tempo/ladder_towel.mp4" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (10 s timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>With high-gain PD, a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2; and the run has to be stopped.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
+        <video src="static/tempo/ladder_towel.mp4?v=2" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.00 s</span></span><br>The high-gain PD run ends in a <b class="warn">joint acc limit (red light)</b>: a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2;.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
       </figure>
 
 
@@ -175,7 +175,7 @@
 <path d="M418.2,194.4 L422.0,201.2 L414.4,201.2 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
 <circle cx="319.5" cy="209.5" r="4" fill="#59636e"/>
 <text x="300" y="266" font-size="10" font-weight="400" text-anchor="start" fill="#8c959f">side view (Y–Z) · ● start</text>
-<text x="590" y="76" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">distance along the path · dot = waypoint (1/15 s) · dashed = same waypoint</text>
+<text x="590" y="76" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">distance along the path</text>
 <line x1="590.0" y1="86" x2="590.0" y2="220" stroke="#eef0f3"/>
 <text x="590.0" y="236" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0 mm</text>
 <line x1="705.2" y1="86" x2="705.2" y2="220" stroke="#eef0f3"/>
@@ -287,7 +287,7 @@
 <path d="M416.1,542.2 L419.9,549.0 L412.3,549.0 Z" fill="#fff" stroke="#0f766e" stroke-width="1.8"/>
 <circle cx="319.5" cy="511.5" r="4" fill="#59636e"/>
 <text x="300" y="568" font-size="10" font-weight="400" text-anchor="start" fill="#8c959f">side view (Y–Z) · ● start</text>
-<text x="590" y="378" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">distance along the path · dot = waypoint (1/15 s) · dashed = same waypoint</text>
+<text x="590" y="378" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">distance along the path</text>
 <line x1="590.0" y1="388" x2="590.0" y2="522" stroke="#eef0f3"/>
 <text x="590.0" y="538" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0 mm</text>
 <line x1="705.2" y1="388" x2="705.2" y2="522" stroke="#eef0f3"/>

@@ -47,7 +47,7 @@ def build(npz, img_urls):
         T("side view (Y–Z) · ● start", 300, y0 + ph + 26, 10, 400, "start", "#8c959f")
         # distance strips
         sx0, sx1 = 590, 960; L = lambda d: sx0 + (sx1 - sx0) * d / lmax
-        T("distance along the path · dot = waypoint (1/15 s) · dashed = same waypoint", sx0, y0 + 6, 11, 400, "start", "#59636e")
+        T("distance along the path", sx0, y0 + 6, 11, 400, "start", "#59636e")
         for v in range(0, int(lmax) + 1, 100):
             o.append(f'<line x1="{L(v):.1f}" y1="{y0 + 16}" x2="{L(v):.1f}" y2="{y0 + 150}" stroke="#eef0f3"/>')
             T(f"{v} mm", L(v), y0 + 166, 10, 400, "middle", "#8c959f")
