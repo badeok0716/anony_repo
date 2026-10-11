@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124012">
-<link rel="stylesheet" href="static/css/tempo.css?v=7">
-<script src="static/js/tempo.js?v=7" defer></script>
+<link rel="stylesheet" href="static/css/tempo.css?v=8">
+<script src="static/js/tempo.js?v=8" defer></script>
 </head>
 <body>
 
@@ -126,9 +126,8 @@
   </section>
 <section id="inference-time" class="tempo"><div class="container">
 <h2 class="section-title">Control the pace at inference time</h2>
-<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and the robot follows that tempo. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound in the player: the engine revs with the speed-up.</p>
 <figure class="tempo-figure">
-<svg class="tempo-fig" viewBox="0 0 1000 330" role="img" aria-label="The action expert outputs 32 values per step; dims 8-10 are three tempo channels. Each channel retimes the same 15-step action chunk.">
+<svg class="tempo-fig" viewBox="0 0 1000 404" role="img" aria-label="The action expert outputs 32 values per step; dims 8-10 are three tempo channels. Each channel retimes the same 15-step action chunk.">
 <text x="153.0" y="22" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2328">action expert output</text>
 <text x="153.0" y="37" font-size="11" font-weight="400" text-anchor="middle" fill="#59636e">one step · 32 dims</text>
 <rect x="118" y="46" width="70" height="11" rx="2" fill="#dbe4ef" stroke="#cbd5e1" stroke-width="0.8"/>
@@ -153,103 +152,116 @@
 <text x="110" y="185.5" font-size="10" font-weight="400" text-anchor="end" fill="#b45309">dims 8–10</text>
 <text x="110" y="212" font-size="11" font-weight="400" text-anchor="end" fill="#8c959f">padding</text>
 <text x="110" y="225" font-size="10" font-weight="400" text-anchor="end" fill="#8c959f">(dims 11–31)</text>
-<text x="975" y="40" font-size="11" font-weight="400" text-anchor="end" fill="#59636e">time →</text>
-<text x="414" y="184" font-size="11" fill="#59636e" text-anchor="middle" transform="rotate(-90 414 184)">action (joint 2) →</text>
-<text x="707.5" y="40" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2328">same 15-step action chunk</text>
-<line x1="440" y1="50" x2="440" y2="310" stroke="#eef0f3"/>
-<text x="440" y="324" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0 s</text>
-<line x1="568.75" y1="50" x2="568.75" y2="310" stroke="#eef0f3"/>
-<text x="568.75" y="324" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0.25 s</text>
-<line x1="697.5" y1="50" x2="697.5" y2="310" stroke="#eef0f3"/>
-<text x="697.5" y="324" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0.5 s</text>
-<line x1="826.25" y1="50" x2="826.25" y2="310" stroke="#eef0f3"/>
-<text x="826.25" y="324" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0.75 s</text>
-<line x1="955.0" y1="50" x2="955.0" y2="310" stroke="#eef0f3"/>
-<text x="955.0" y="324" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">1 s</text>
-<text x="256" y="84" font-size="15" font-weight="700" text-anchor="start" fill="#0ea5e9">q50</text>
-<text x="256" y="100" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">default step · 1/15 s</text>
-<polyline points="474.3,96.0 508.7,94.5 543.0,92.4 577.3,89.9 611.7,87.3 646.0,84.1 680.3,80.8 714.7,77.9 749.0,74.8 783.3,72.0 817.7,69.6 852.0,67.7 886.3,66.6 920.7,66.0 955.0,66.3" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-opacity="0.75"/>
-<circle cx="474.3" cy="96.0" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="508.7" cy="94.5" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="543.0" cy="92.4" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="577.3" cy="89.9" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="611.7" cy="87.3" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="646.0" cy="84.1" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="680.3" cy="80.8" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="714.7" cy="77.9" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="749.0" cy="74.8" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="783.3" cy="72.0" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="817.7" cy="69.6" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="852.0" cy="67.7" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="886.3" cy="66.6" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="920.7" cy="66.0" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<circle cx="955.0" cy="66.3" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
-<text x="964.9999999999999" y="70.29723861169067" font-size="11" font-weight="600" text-anchor="start" fill="#0ea5e9">1.00 s</text>
-<path d="M190,129.5 C228,129.5 216,79 250,79" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="4 4" stroke-opacity="0.8"/>
-<text x="256" y="150" font-size="15" font-weight="700" text-anchor="start" fill="#8b5cf6">q90</text>
-<text x="256" y="166" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">tempo channel</text>
-<polyline points="462.2,162.0 487.9,160.5 515.4,158.4 543.8,155.9 572.6,153.3 601.5,150.1 630.3,146.8 658.9,143.9 687.5,140.8 715.8,138.0 743.7,135.6 770.8,133.7 797.0,132.6 822.3,132.0 847.3,132.3" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-opacity="0.75"/>
-<circle cx="462.2" cy="162.0" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="487.9" cy="160.5" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="515.4" cy="158.4" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="543.8" cy="155.9" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="572.6" cy="153.3" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="601.5" cy="150.1" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="630.3" cy="146.8" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="658.9" cy="143.9" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="687.5" cy="140.8" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="715.8" cy="138.0" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="743.7" cy="135.6" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="770.8" cy="133.7" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="797.0" cy="132.6" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="822.3" cy="132.0" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<circle cx="847.3" cy="132.3" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
-<text x="857.304864980197" y="136.29723861169066" font-size="11" font-weight="600" text-anchor="start" fill="#8b5cf6">0.79 s</text>
-<path d="M190,155.5 C228,155.5 216,145 250,145" fill="none" stroke="#8b5cf6" stroke-width="1.6" stroke-opacity="0.8"/>
-<text x="256" y="216" font-size="15" font-weight="700" text-anchor="start" fill="#16a34a">q95</text>
-<text x="256" y="232" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">tempo channel</text>
-<polyline points="459.8,228.0 483.5,226.5 509.3,224.4 536.1,221.9 563.4,219.3 590.9,216.1 618.3,212.8 645.5,209.9 672.5,206.8 699.4,204.0 725.6,201.6 750.9,199.7 775.2,198.6 798.4,198.0 821.2,198.3" fill="none" stroke="#16a34a" stroke-width="2" stroke-opacity="0.75"/>
-<circle cx="459.8" cy="228.0" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="483.5" cy="226.5" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="509.3" cy="224.4" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="536.1" cy="221.9" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="563.4" cy="219.3" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="590.9" cy="216.1" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="618.3" cy="212.8" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="645.5" cy="209.9" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="672.5" cy="206.8" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="699.4" cy="204.0" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="725.6" cy="201.6" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="750.9" cy="199.7" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="775.2" cy="198.6" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="798.4" cy="198.0" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<circle cx="821.2" cy="198.3" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
-<text x="831.2438383668783" y="202.29723861169066" font-size="11" font-weight="600" text-anchor="start" fill="#16a34a">0.74 s</text>
-<path d="M190,168.5 C228,168.5 216,211 250,211" fill="none" stroke="#16a34a" stroke-width="1.6" stroke-opacity="0.8"/>
-<text x="256" y="282" font-size="15" font-weight="700" text-anchor="start" fill="#d97706">q99</text>
-<text x="256" y="298" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">tempo channel</text>
-<polyline points="455.9,294.0 476.1,292.5 498.7,290.4 522.5,287.9 547.0,285.3 571.7,282.1 596.3,278.8 620.6,275.9 644.8,272.8 668.7,270.0 692.0,267.6 714.0,265.7 734.8,264.6 754.4,264.0 773.4,264.3" fill="none" stroke="#d97706" stroke-width="2" stroke-opacity="0.75"/>
-<circle cx="455.9" cy="294.0" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="476.1" cy="292.5" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="498.7" cy="290.4" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="522.5" cy="287.9" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="547.0" cy="285.3" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="571.7" cy="282.1" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="596.3" cy="278.8" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="620.6" cy="275.9" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="644.8" cy="272.8" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="668.7" cy="270.0" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="692.0" cy="267.6" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="714.0" cy="265.7" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="734.8" cy="264.6" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="754.4" cy="264.0" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<circle cx="773.4" cy="264.3" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
-<text x="783.380391072529" y="268.29723861169066" font-size="11" font-weight="600" text-anchor="start" fill="#d97706">0.65 s</text>
-<path d="M190,181.5 C228,181.5 216,277 250,277" fill="none" stroke="#d97706" stroke-width="1.6" stroke-opacity="0.8"/>
+<text x="975" y="42" font-size="11" font-weight="400" text-anchor="end" fill="#59636e">time →</text>
+<text x="414" y="210" font-size="11" fill="#59636e" text-anchor="middle" transform="rotate(-90 414 210)">action (joint 2) →</text>
+<text x="707.5" y="42" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2328">same 15-step action chunk</text>
+<line x1="440" y1="52" x2="440" y2="360" stroke="#eef0f3"/>
+<text x="440" y="376" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0 s</text>
+<line x1="568.75" y1="52" x2="568.75" y2="360" stroke="#eef0f3"/>
+<text x="568.75" y="376" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0.25 s</text>
+<line x1="697.5" y1="52" x2="697.5" y2="360" stroke="#eef0f3"/>
+<text x="697.5" y="376" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0.5 s</text>
+<line x1="826.25" y1="52" x2="826.25" y2="360" stroke="#eef0f3"/>
+<text x="826.25" y="376" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">0.75 s</text>
+<line x1="955.0" y1="52" x2="955.0" y2="360" stroke="#eef0f3"/>
+<text x="955.0" y="376" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">1 s</text>
+<line x1="440.0" y1="112.0" x2="474.3" y2="104.3" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="3 3"/>
+<circle cx="440.0" cy="112.0" r="5" fill="#fff" stroke="#0ea5e9" stroke-width="1.8" stroke-dasharray="2.5 2"/>
+<text x="256" y="92" font-size="15" font-weight="700" text-anchor="start" fill="#0ea5e9">q50</text>
+<text x="256" y="108" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">default step · 1/15 s</text>
+<polyline points="474.3,104.3 508.7,95.2 543.0,86.9 577.3,77.6 611.7,73.3 646.0,70.0 680.3,68.1 714.7,68.0 749.0,69.6 783.3,75.5 817.7,84.5 852.0,94.1 886.3,102.4 920.7,104.6 955.0,99.5" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-opacity="0.75"/>
+<circle cx="474.3" cy="104.3" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="508.7" cy="95.2" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="543.0" cy="86.9" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="577.3" cy="77.6" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="611.7" cy="73.3" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="646.0" cy="70.0" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="680.3" cy="68.1" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="714.7" cy="68.0" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="749.0" cy="69.6" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="783.3" cy="75.5" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="817.7" cy="84.5" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="852.0" cy="94.1" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="886.3" cy="102.4" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="920.7" cy="104.6" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<circle cx="955.0" cy="99.5" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
+<text x="964.9999999999999" y="103.52395801810485" font-size="11" font-weight="600" text-anchor="start" fill="#0ea5e9">1.00 s</text>
+<path d="M190,129.5 C228,129.5 216,87 250,87" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="4 4" stroke-opacity="0.8"/>
+<line x1="440.0" y1="190.0" x2="468.6" y2="182.3" stroke="#8b5cf6" stroke-width="1.6" stroke-dasharray="3 3"/>
+<circle cx="440.0" cy="190.0" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="1.8" stroke-dasharray="2.5 2"/>
+<text x="256" y="170" font-size="15" font-weight="700" text-anchor="start" fill="#8b5cf6">q90</text>
+<text x="256" y="186" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">tempo channel</text>
+<polyline points="468.6,182.3 497.2,173.2 525.5,164.9 553.3,155.6 580.2,151.3 606.2,148.0 631.2,146.1 655.3,146.0 680.2,147.6 707.9,153.5 737.0,162.5 766.3,172.1 795.7,180.4 824.6,182.6 853.5,177.5" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-opacity="0.75"/>
+<circle cx="468.6" cy="182.3" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="497.2" cy="173.2" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="525.5" cy="164.9" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="553.3" cy="155.6" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="580.2" cy="151.3" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="606.2" cy="148.0" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="631.2" cy="146.1" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="655.3" cy="146.0" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="680.2" cy="147.6" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="707.9" cy="153.5" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="737.0" cy="162.5" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="766.3" cy="172.1" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="795.7" cy="180.4" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="824.6" cy="182.6" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="853.5" cy="177.5" r="3.6" fill="#fff" stroke="#8b5cf6" stroke-width="1.8"/>
+<text x="863.5174913087758" y="181.52395801810485" font-size="11" font-weight="600" text-anchor="start" fill="#8b5cf6">0.80 s</text>
+<path d="M190,155.5 C228,155.5 216,165 250,165" fill="none" stroke="#8b5cf6" stroke-width="1.6" stroke-opacity="0.8"/>
+<line x1="440.0" y1="268.0" x2="467.2" y2="260.3" stroke="#16a34a" stroke-width="1.6" stroke-dasharray="3 3"/>
+<circle cx="440.0" cy="268.0" r="5" fill="#fff" stroke="#16a34a" stroke-width="1.8" stroke-dasharray="2.5 2"/>
+<text x="256" y="248" font-size="15" font-weight="700" text-anchor="start" fill="#16a34a">q95</text>
+<text x="256" y="264" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">tempo channel</text>
+<polyline points="467.2,260.3 494.2,251.2 521.0,242.9 547.2,233.6 572.3,229.3 596.3,226.0 619.2,224.1 640.9,224.0 663.6,225.6 689.6,231.5 717.3,240.5 745.3,250.1 773.3,258.4 800.8,260.6 828.3,255.5" fill="none" stroke="#16a34a" stroke-width="2" stroke-opacity="0.75"/>
+<circle cx="467.2" cy="260.3" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="494.2" cy="251.2" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="521.0" cy="242.9" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="547.2" cy="233.6" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="572.3" cy="229.3" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="596.3" cy="226.0" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="619.2" cy="224.1" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="640.9" cy="224.0" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="663.6" cy="225.6" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="689.6" cy="231.5" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="717.3" cy="240.5" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="745.3" cy="250.1" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="773.3" cy="258.4" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="800.8" cy="260.6" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<circle cx="828.3" cy="255.5" r="3.6" fill="#fff" stroke="#16a34a" stroke-width="1.8"/>
+<text x="838.2942860057415" y="259.52395801810485" font-size="11" font-weight="600" text-anchor="start" fill="#16a34a">0.75 s</text>
+<path d="M190,168.5 C228,168.5 216,243 250,243" fill="none" stroke="#16a34a" stroke-width="1.6" stroke-opacity="0.8"/>
+<line x1="440.0" y1="346.0" x2="464.3" y2="338.3" stroke="#d97706" stroke-width="1.6" stroke-dasharray="3 3"/>
+<circle cx="440.0" cy="346.0" r="5" fill="#fff" stroke="#d97706" stroke-width="1.8" stroke-dasharray="2.5 2"/>
+<text x="256" y="326" font-size="15" font-weight="700" text-anchor="start" fill="#d97706">q99</text>
+<text x="256" y="342" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">tempo channel</text>
+<polyline points="464.3,338.3 488.5,329.2 512.4,320.9 535.4,311.6 557.3,307.3 577.8,304.0 597.1,302.1 614.8,302.0 633.6,303.6 656.6,309.5 681.6,318.5 706.9,328.1 732.1,336.4 756.9,338.6 781.6,333.5" fill="none" stroke="#d97706" stroke-width="2" stroke-opacity="0.75"/>
+<circle cx="464.3" cy="338.3" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="488.5" cy="329.2" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="512.4" cy="320.9" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="535.4" cy="311.6" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="557.3" cy="307.3" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="577.8" cy="304.0" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="597.1" cy="302.1" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="614.8" cy="302.0" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="633.6" cy="303.6" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="656.6" cy="309.5" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="681.6" cy="318.5" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="706.9" cy="328.1" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="732.1" cy="336.4" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="756.9" cy="338.6" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<circle cx="781.6" cy="333.5" r="3.6" fill="#fff" stroke="#d97706" stroke-width="1.8"/>
+<text x="791.634765898951" y="337.52395801810485" font-size="11" font-weight="600" text-anchor="start" fill="#d97706">0.66 s</text>
+<path d="M190,181.5 C228,181.5 216,321 250,321" fill="none" stroke="#d97706" stroke-width="1.6" stroke-opacity="0.8"/>
+<circle cx="446" cy="390" r="5" fill="#fff" stroke="#59636e" stroke-width="1.6" stroke-dasharray="2.5 2"/>
+<text x="458" y="394" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">chunk start (arm state when the chunk begins)</text>
+<circle cx="760" cy="390" r="4" fill="#fff" stroke="#59636e" stroke-width="1.6"/>
+<text x="770" y="394" font-size="11" font-weight="400" text-anchor="start" fill="#59636e">predicted waypoints</text>
 </svg>
 
 <figcaption>Choose the pace as a quantile of the speed prior, i.e. of the speeds demonstrated for the same motion across the training data (q90, q95, q99), or keep the default step of 1/15 s (q50).</figcaption>
 </figure>
+<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and the robot follows that tempo. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound in the player: the engine revs with the speed-up.</p>
 
 <nav class="tempo-tabs" role="tablist" aria-label="Task">
   <button role="tab" data-task="trash" aria-selected="true">Trash cleanup <span>q99</span></button>

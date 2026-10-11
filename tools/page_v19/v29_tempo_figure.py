@@ -1,14 +1,15 @@
 """Inline SVG for the page (2026-10-11): the action expert's 32-dim step output (7 joints, gripper, 3 tempo channels at
 dims 8-10, padding) -> q50 (default step 1/15 s) and the q90/q95/q99 channels -> the same 15-step chunk on a time axis,
-whose step spacing shrinks with the predicted per-step speed-up. Data: cup rollout 041209, chunk 0, joint 2."""
+whose step spacing shrinks with the predicted per-step speed-up. Data: cup rollout 041209, chunk 2 (query 1: grasp, lift, carry), joint 2."""
 import json, sys, numpy as np
 
-def figure(chunks_json, k=0, joint=1):
+def figure(chunks_json, k=1, joint=1):
     q = json.load(open(chunks_json))["queries"][k]
     a = np.array(q["actions"])[:, joint]; rate = np.exp(np.array(q["tempo"]))           # (15, 3)
+    a0 = float(q["state"][joint])                                                       # where the chunk starts
     rows = [("q50", "default step · 1/15 s", np.full(15, 1.0), "#0ea5e9")] + \
            [(n, "tempo channel", rate[:, i], c) for i, (n, c) in enumerate((("q90", "#8b5cf6"), ("q95", "#16a34a"), ("q99", "#d97706")))]
-    W, H = 1000, 330; out = [f'<svg class="tempo-fig" viewBox="0 0 {W} {H}" role="img" aria-label="The action expert outputs 32 values per step; dims 8-10 are three tempo channels. Each channel retimes the same 15-step action chunk.">']
+    W, H = 1000, 404; out = [f'<svg class="tempo-fig" viewBox="0 0 {W} {H}" role="img" aria-label="The action expert outputs 32 values per step; dims 8-10 are three tempo channels. Each channel retimes the same 15-step action chunk.">']
     T = lambda s, x, y, sz=13, w=400, anc="start", col="#1f2328": out.append(
         f'<text x="{x}" y="{y}" font-size="{sz}" font-weight="{w}" text-anchor="{anc}" fill="{col}">{s}</text>')
     # --- left: one step of the output vector
@@ -30,24 +31,32 @@ def figure(chunks_json, k=0, joint=1):
     T("padding", x0 - 8, y0 + 12 * (ch + 2) + 10, 11, 400, "end", "#8c959f")
     T("(dims 11–31)", x0 - 8, y0 + 12 * (ch + 2) + 23, 10, 400, "end", "#8c959f")
     # --- rows: q50 on top, then q90 / q95 / q99
-    rx0, rx1, ry0, rh, lx = 400, 975, 58, 66, 256
+    rx0, rx1, ry0, rh, lx = 400, 975, 60, 78, 256
     tx = lambda t: rx0 + 40 + (rx1 - rx0 - 60) * t                    # 0..1 s
-    lo, hi = a.min(), a.max()
+    lo, hi = min(a.min(), a0), max(a.max(), a0); amp = 44
     T("time →", rx1, ry0 - 18, 11, 400, "end", "#59636e"); out.append(f'<text x="{rx0 + 14}" y="{ry0 + 2 * rh - 6}" font-size="11" fill="#59636e" text-anchor="middle" transform="rotate(-90 {rx0 + 14} {ry0 + 2 * rh - 6})">action (joint 2) →</text>'); T("same 15-step action chunk", (rx0 + rx1) / 2 + 20, ry0 - 18, 13, 600, "middle")
     for g in (0, 0.25, 0.5, 0.75, 1.0):
         out.append(f'<line x1="{tx(g)}" y1="{ry0 - 8}" x2="{tx(g)}" y2="{ry0 + 4 * rh - 12}" stroke="#eef0f3"/>')
-        T(f"{g:g} s", tx(g), ry0 + 4 * rh + 2, 10, 400, "middle", "#8c959f")
+        T(f"{g:g} s", tx(g), ry0 + 4 * rh + 4, 10, 400, "middle", "#8c959f")
     for r_, (name, sub, rate_k, col) in enumerate(rows):
         yc = ry0 + r_ * rh; t = np.r_[0, np.cumsum((1 / 15) / rate_k)]
-        pts = [(tx(t[i + 1]), yc + 38 - 30 * (a[i] - lo) / (hi - lo + 1e-9)) for i in range(15)]
-        T(name, lx, yc + 26, 15, 700, "start", col); T(sub, lx, yc + 42, 10, 400, "start", "#59636e")
+        Y = lambda v: yc + 52 - amp * (v - lo) / (hi - lo + 1e-9)
+        pts = [(tx(t[i + 1]), Y(a[i])) for i in range(15)]
+        sx, sy0 = tx(0), Y(a0)                                    # chunk start: the arm's state when the chunk begins
+        out.append(f'<line x1="{sx:.1f}" y1="{sy0:.1f}" x2="{pts[0][0]:.1f}" y2="{pts[0][1]:.1f}" stroke="{col}" stroke-width="1.6" stroke-dasharray="3 3"/>')
+        out.append(f'<circle cx="{sx:.1f}" cy="{sy0:.1f}" r="5" fill="#fff" stroke="{col}" stroke-width="1.8" stroke-dasharray="2.5 2"/>')
+        T(name, lx, yc + 32, 15, 700, "start", col); T(sub, lx, yc + 48, 10, 400, "start", "#59636e")
         out.append(f'<polyline points="{" ".join(f"{px:.1f},{py:.1f}" for px, py in pts)}" fill="none" stroke="{col}" stroke-width="2" stroke-opacity="0.75"/>')
         for px, py in pts: out.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="3.6" fill="#fff" stroke="{col}" stroke-width="1.8"/>')
         T(f"{t[-1]:.2f} s", pts[-1][0] + 10, pts[-1][1] + 4, 11, 600, "start", col)
         # connector from the tempo cells (q50: dashed, no channel)
         sy = tempo_y[r_ - 1] if r_ else tempo_y[0] - 26
         dash = ' stroke-dasharray="4 4"' if r_ == 0 else ""
-        out.append(f'<path d="M{x0 + cw + 2},{sy} C{x0 + cw + 40},{sy} {lx - 40},{yc + 21} {lx - 6},{yc + 21}" fill="none" stroke="{col}" stroke-width="1.6"{dash} stroke-opacity="0.8"/>')
+        out.append(f'<path d="M{x0 + cw + 2},{sy} C{x0 + cw + 40},{sy} {lx - 40},{yc + 27} {lx - 6},{yc + 27}" fill="none" stroke="{col}" stroke-width="1.6"{dash} stroke-opacity="0.8"/>')
+    out.append(f'<circle cx="{rx0 + 46}" cy="{H - 14}" r="5" fill="#fff" stroke="#59636e" stroke-width="1.6" stroke-dasharray="2.5 2"/>')
+    T("chunk start (arm state when the chunk begins)", rx0 + 58, H - 10, 11, 400, "start", "#59636e")
+    out.append(f'<circle cx="{rx0 + 360}" cy="{H - 14}" r="4" fill="#fff" stroke="#59636e" stroke-width="1.6"/>')
+    T("predicted waypoints", rx0 + 370, H - 10, 11, 400, "start", "#59636e")
     out.append("</svg>")
     return "\n".join(out)
 
