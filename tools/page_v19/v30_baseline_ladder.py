@@ -22,18 +22,20 @@ RED, GREEN, AMBER, BLUE = (220, 38, 38), (34, 160, 70), (217, 119, 6), (59, 130,
 #    has its first-motion frame (checked by eye on the v31 contact sheets) placed at T_MOVE = 0.19 s.
 #  - Default 1x + our controller (cup): log v3_20261004_084245 completes at 4.50 s; video completion 4.2 s after frame 0
 #    -> frame 0 = 0.30 s.
+#  User check 2026-10-12: visible first motion should coincide with Ours (cup ~0.3 s, towel ~0.5 s); the cup high-gain
+#  PD and the towel baselines are shifted later by eye (+0.25 / +0.4, +0.3, +0.2 s). The 10 s timeout stays on the policy clock.
 #  Before a clip's first recorded frame the panel holds that frame. Cut at the task timeout (cup/towel 10 s, trash 60 s).
 T_MOVE = 0.19
 TASKS = {
  "cup": dict(portrait=True, timeout=10.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/cup/cup(w／o control,tempo align).MOV", anchor=(64, T_MOVE), done=8.2 + T_MOVE),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Cup_demo/cup_raw_1x_high_gain_pd_failure.mov", anchor=(14, T_MOVE), end=("failure", RED)),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Cup_demo/cup_raw_1x_high_gain_pd_failure.mov", anchor=(14, T_MOVE + 0.25), end=("failure", RED)),
    dict(title="Default 1× + our controller", path=DEMO + "/Cup_demo/cup_raw_1x_control.mov", anchor=(0, 0.30), done=4.50),
    dict(title="Ours (q99) + our controller", path=O + "/orig/cup_sdr30.mp4", anchor=(0, 0.264), done=3.162)]),
  "towel": dict(portrait=True, timeout=10.0, panels=[
-   dict(title="Default 1× + PD", path=REP + "/towel/towel(w／o control, tempo align)", cx=0.30, crop_aspect=0.80, anchor=(79, T_MOVE), end=("failure", RED)),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", anchor=(13, T_MOVE), end=("failure · joint acc limit (red light)", RED)),
-   dict(title="Default 1× + our controller", path=DEMO + "/Towel_demo/towel_raw_1x_failure.mov", anchor=(1, T_MOVE), end=("failure", RED)),
+   dict(title="Default 1× + PD", path=REP + "/towel/towel(w／o control, tempo align)", cx=0.30, crop_aspect=0.80, anchor=(79, T_MOVE + 0.40), end=("failure", RED)),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", anchor=(13, T_MOVE + 0.30), end=("failure · joint acc limit (red light)", RED)),
+   dict(title="Default 1× + our controller", path=DEMO + "/Towel_demo/towel_raw_1x_failure.mov", anchor=(1, T_MOVE + 0.20), end=("failure", RED)),
    dict(title="Ours (q95) + our controller", path=O + "/orig/towel_30.mp4", anchor=(0, 0.451), done=4.487)]),
  "trash": dict(portrait=False, timeout=60.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/trash/trash(w／o control, tempo align)", anchor=(82, T_MOVE), end=("0 / 15", RED)),

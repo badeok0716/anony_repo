@@ -53,12 +53,12 @@
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Cup stacking</h3>
-        <video src="static/tempo/ladder_cup.mp4?v=3" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
+        <video src="static/tempo/ladder_cup.mp4?v=4" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
         <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.39 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.50 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
-        <video src="static/tempo/ladder_towel.mp4?v=3" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
+        <video src="static/tempo/ladder_towel.mp4?v=4" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
         <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>The high-gain PD run ends in a <b class="warn">joint acc limit (red light)</b>: a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2;.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
       </figure>
 
