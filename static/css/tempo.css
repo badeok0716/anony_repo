@@ -64,3 +64,13 @@
   .qscale-ticks .axis { display: none; }
   .qscale-caption { display: none; }
 }
+
+.train-fig { display: block; width: 100%; height: auto; font-family: inherit; }
+#training-time + #inference-time { border-top: 1px solid var(--rule); }
+@media (max-width: 760px) { .train-figure { overflow-x: auto; } .train-fig { min-width: 720px; } }
+
+.ladder video { display: block; width: 100%; height: auto; border-radius: 10px; background: #101118; }
+.ladder .demo-caption { text-align: left; }
+.ladder .warn { color: #dc2626; }
+.ladder code { font-size: 0.85em; background: var(--panel); padding: 0 4px; border-radius: 4px; }
+.ladder-note { font-size: 0.85rem; color: var(--faint); }
