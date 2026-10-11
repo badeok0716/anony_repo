@@ -1,140 +1,151 @@
-/* Both lanes are already synchronized in the split MP4. Playback rate stays 1. */
-'use strict';
-const byId = id => document.getElementById(id);
-const video = byId('motion');
-let data, task, audio, enabled = false, generation = 0;
-const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-const gaugeAngle = rate => 110 * clamp(Math.log(Math.max(rate, .001)) / Math.log(data.gauge_max), -1, 1);
-function sample(rows, t) {
-  if (t <= rows[0][0]) return rows[0][1];
-  let lo = 0, hi = rows.length - 1;
-  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (rows[m][0] <= t) lo = m; else hi = m; }
-  const a = rows[lo], b = rows[hi];
-  return a[1] + (b[1] - a[1]) * clamp((t - a[0]) / (b[0] - a[0]), 0, 1);
-}
-function soundLevel(rate, active) {
-  if (!audio) return;
-  const now = audio.ctx.currentTime;
-  const pace = clamp(rate, .35, 3);
-  const dt=Math.max(.016,now-(audio.lastTime||now));
-  const acceleration=clamp((pace-(audio.lastPace||pace))/dt,0,2);
-  audio.boost=Math.max(acceleration,(audio.boost||0)*Math.exp(-dt/.35));
-  audio.lastTime=now;audio.lastPace=pace;
-  // Detuned low engine layers: fixed tone filter, audible rising rev and swell.
-  audio.voices.forEach((voice,i)=>voice.frequency.setTargetAtTime((48+48*pace)*[.5,1,1.008,2,2.012][i],now,.10));
-  const rev=clamp((pace-.8)/1.2,0,1);
-  audio.gain.gain.setTargetAtTime(enabled && active ? Number(byId('volume').value)/100*(.28+.48*rev+.16*audio.boost) : 0,now,active?.09:.035);
-}
-function update() {
-  if (!data || !task) return;
-  const t = video.currentTime, policyTime = t + task.lag_s;
-  const active = policyTime >= task.policy_start_s && policyTime < task.completion_s;
-  const rate = sample(task.samples, t);
-  byId('clock').textContent = `${Math.max(0, policyTime).toFixed(2)} s`;
-  soundLevel(rate, active && !video.paused && !video.ended && !video.seeking && !document.hidden && video.readyState >= 3);
-}
-function select(name) {
-  video.pause(); task = data.tasks[name];
+/* Inference-time tempo section (rebuilt 2026-10-11).
+   1) task tabs switch the split video (speedometer + engine sound are inside the MP4s);
+   2) chunk explorer: video on the selected clock (q50 ghost overlaid), one 3D view with the q50 runner and the
+      selected runner on their current pick/place segment, and a quantile scale (50..100, positions to scale). */
+(function () {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
 
-  video.src = task.video; video.load();
-  byId('download').href = task.video;
-  document.querySelectorAll('[data-task]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.task === name)));
-  update();
-}
-function animate() {
-  const token = ++generation;
-  function tick() {
-    if (token !== generation) return;
-    update();
-
-    if (!video.paused && !video.ended) {
-      if (video.requestVideoFrameCallback) video.requestVideoFrameCallback(tick);
-      else requestAnimationFrame(tick);
-    }
-  }
-  tick();
-}
-byId('sound').addEventListener('click', async () => {
-  byId('sound').disabled = true;
-  try {
-    if (!audio) {
-      const Audio = window.AudioContext || window.webkitAudioContext;
-      if (!Audio) throw new Error('Web Audio is unavailable in this browser.');
-      const ctx = new Audio(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
-      filter.type='lowpass'; filter.Q.value=.7; filter.frequency.value=850; gain.gain.value=0;
-      const compressor=ctx.createDynamicsCompressor();
-      compressor.threshold.value=-12; compressor.ratio.value=4;
-      filter.connect(gain).connect(compressor).connect(ctx.destination);
-      const voices=[.32,.25,.20,.13,.10].map((level,i)=>{
-        const osc=ctx.createOscillator(), mix=ctx.createGain();
-        osc.type=i===0?'sine':i<3?'triangle':'sawtooth'; osc.frequency.value=96*[.5,1,1.008,2,2.012][i];
-        mix.gain.value=level; osc.connect(mix).connect(filter); osc.start(); return osc;
-      });
-      audio={ctx,voices,filter,gain};
-    }
-    await audio.ctx.resume(); enabled = !enabled;
-    byId('sound').setAttribute('aria-pressed', String(enabled));
-    byId('sound').textContent = enabled ? 'Mute tempo sound' : 'Enable tempo sound'; update();
-  } catch (e) { byId('error').hidden = false; byId('error').textContent = e.message; }
-  finally { byId('sound').disabled = false; }
-});
-byId('volume').addEventListener('input', update);
-byId('replay').addEventListener('click', () => { video.currentTime = 0; video.play().catch(e => { byId('error').hidden = false; byId('error').textContent = e.message; }); });
-document.querySelectorAll('[data-task]').forEach(b => b.addEventListener('click', () => { if (data) select(b.dataset.task); }));
-video.addEventListener('play', animate);
-for (const event of ['pause','ended','timeupdate','seeking','seeked','waiting','playing']) video.addEventListener(event, update);
-video.addEventListener('loadedmetadata', () => { update(); });
-video.addEventListener('error', () => { byId('error').hidden = false; byId('error').textContent = 'Video could not be loaded. Serve this page over HTTP and check the media files.'; });
-document.addEventListener('visibilitychange', update);
-window.addEventListener('pagehide', () => soundLevel(1,false));
-fetch('static/data/tempo.json').then(r => { if (!r.ok) throw new Error(`Telemetry HTTP ${r.status}`); return r.json(); }).then(result => {
-  data = result; select('cup');
-}).catch(e => { byId('error').hidden=false; byId('error').textContent=`Telemetry unavailable: ${e.message}. Open using an HTTP server, not file://.`; });
-
-let chunkData, atlas, chunkGeneration=0;
-const channels=['q90','q95','q99'], channelColors=['#9460cc','#169470','#bf7908'];
-function clockIndex(name,t){return sample(chunkData.clocks[name].map((v,i)=>[v,i]),t);}
-function positionAt(points,index){
-  const a=Math.floor(index),b=Math.min(a+1,points.length-1),f=index-a;
-  return points[a].map((v,i)=>v+(points[b][i]-v)*f);
-}
-function drawChunk(t=0){
-  if(!chunkData || !atlas)return;
-  const pts=chunkData.xyz.map(p=>[.866*(p[0]-p[1]),p[2]-.5*(p[0]+p[1])]);
-  const min=[0,1].map(i=>Math.min(...pts.map(p=>p[i]))),max=[0,1].map(i=>Math.max(...pts.map(p=>p[i])));
-  const scale=Math.min(300/Math.max(max[0]-min[0],.01),180/Math.max(max[1]-min[1],.01));
-  const project=p=>[190+(p[0]-(max[0]+min[0])/2)*scale,125-(p[1]-(max[1]+min[1])/2)*scale];
-  const xy=pts.map(project),base=clockIndex('q50',t);
-  channels.forEach((name,k)=>{
-    const index=clockIndex(name,t),a=positionAt(xy,index),b=positionAt(xy,base),color=channelColors[k];
-    const phasePath=(idx,stroke)=>{
-      const time=sample(chunkData.clip_time.map((v,i)=>[i,v]),idx),bounds=chunkData.segments.boundaries;
-      let phase=0;while(phase<bounds.length-2 && time>=bounds[phase+1])phase++;
-      const visible=xy.filter((_,i)=>chunkData.clip_time[i]>=bounds[phase] && chunkData.clip_time[i]<=bounds[phase+1]);
-      return `<path data-phase="${phase}" d="${visible.map((p,i)=>`${i?'L':'M'}${p.join(',')}`).join(' ')}" fill="none" stroke="${stroke}" stroke-width="2.5"/>${visible.filter((_,i)=>i%8===0).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="${stroke}"/>`).join('')}`;
-    };
-    byId('chunk-'+name).innerHTML=phasePath(base,'#147ba4')+phasePath(index,color)+`<circle cx="${b[0]}" cy="${b[1]}" r="10" fill="#147ba4" opacity=".25"/><circle cx="${a[0]}" cy="${a[1]}" r="6" fill="${color}"/><path d="M25 222 l23 13 M25 222 l-14 14 M25 222 v-27" fill="none" stroke="#778494"/><text x="49" y="239" font-size="11">X</text><text x="3" y="248" font-size="11">Y</text><text x="21" y="189" font-size="11">Z</text>`;
-    const canvas=byId('frames-'+name),ctx=canvas.getContext('2d'),spec=chunkData.atlas;
-    [base,index].forEach((idx,lane)=>{
-      const clip=sample(chunkData.clip_time.map((v,i)=>[i,v]),idx);
-      const frame=Math.min(spec.count-1,Math.round(clip*spec.fps));
-      ctx.drawImage(atlas,(frame%spec.columns)*spec.width,Math.floor(frame/spec.columns)*spec.height,spec.width,spec.height,lane*spec.width,0,spec.width,spec.height);
+  /* ---------- 1. split videos ---------- */
+  const split = $("#split-video");
+  document.querySelectorAll(".tempo-tabs button").forEach((b) => {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".tempo-tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+      const vol = split.volume, muted = split.muted;
+      split.pause();
+      split.src = `static/tempo/split_${b.dataset.task}.mp4`;
+      split.volume = vol; split.muted = muted;
+      split.load();
     });
-    byId('time-'+name).textContent=`q50 ${chunkData.clocks.q50.at(-1).toFixed(2)} s · ${name} ${chunkData.clocks[name].at(-1).toFixed(2)} s`;
-    canvas.dataset.progress=index.toFixed(2);
   });
-  byId('chunk-time').textContent=`Shared clock: ${t.toFixed(2)} s`;
-}
-byId('chunk-play').addEventListener('click',()=>{
-  if(!chunkData || !atlas)return;
-  const token=++chunkGeneration,start=performance.now(),end=Math.max(...Object.values(chunkData.clocks).map(c=>c.at(-1)));
-  byId('chunk-play').textContent='↺ Restart all';
-  const tick=now=>{
-    if(token!==chunkGeneration)return;
-    const t=Math.min((now-start)/1000,end);drawChunk(t);
-    if(t<end)requestAnimationFrame(tick);else byId('chunk-play').textContent='▶ Run full Cup';
-  };requestAnimationFrame(tick);
-});
-fetch('static/data/segment.json').then(r=>{if(!r.ok)throw new Error('Segment data unavailable');return r.json();}).then(async d=>{
-  chunkData=d;atlas=new Image();atlas.src=d.atlas.src;await atlas.decode();drawChunk();byId('chunk-play').disabled=false;
-}).catch(e=>{byId('chunk-time').textContent=e.message;});
+
+  /* ---------- 2. chunk explorer ---------- */
+  const COLORS = { q50: "#0ea5e9", q90: "#8b5cf6", q95: "#16a34a", q99: "#d97706" };
+  const STOPS = [50, 90, 95, 99];
+  const video = $("#chunk-video"), svg = $("#chunk-svg"), readout = $("#chunk-readout"), label = $("#chunk-video-label");
+  const scale = $("#qscale"), ticks = scale.querySelector(".qscale-ticks"), thumb = scale.querySelector(".qscale-thumb"),
+        fill = scale.querySelector(".qscale-fill");
+  const NS = "http://www.w3.org/2000/svg";
+  let D = null, sel = 50, vb = null, planT = [];
+
+  const frac = (q) => (q - 50) / 50;                       // 50 -> 0, 100 -> 1 (to scale)
+  const vertical = () => window.matchMedia("(min-width: 761px)").matches;
+  STOPS.forEach((q) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = "q" + q; b.dataset.q = q;
+    b.addEventListener("pointerdown", (e) => e.stopPropagation());
+    b.addEventListener("click", (e) => { e.stopPropagation(); choose(q); });
+    ticks.appendChild(b);
+  });
+  [60, 70, 80].forEach((q) => { const s = document.createElement("span"); s.className = "axis"; s.textContent = q; s.dataset.q = q; ticks.appendChild(s); });
+  function placeScale() {
+    const v = vertical();
+    ticks.querySelectorAll("[data-q]").forEach((e) => {
+      const f = frac(+e.dataset.q) * 100;
+      e.style.bottom = v ? f + "%" : ""; e.style.left = v ? "" : f + "%";
+    });
+    const f = frac(sel) * 100;
+    thumb.style.bottom = v ? f + "%" : ""; thumb.style.left = v ? "" : f + "%";
+    fill.style.height = v ? f + "%" : ""; fill.style.width = v ? "" : f + "%";
+    ticks.querySelectorAll("button").forEach((b) => b.classList.toggle("on", +b.dataset.q === sel));
+    scale.setAttribute("aria-valuenow", sel); scale.setAttribute("aria-valuetext", "q" + sel);
+  }
+  const nearest = (q) => STOPS.reduce((a, b) => (Math.abs(b - q) < Math.abs(a - q) ? b : a));
+  function qFromPointer(e) {
+    const r = scale.querySelector(".qscale-track").getBoundingClientRect();
+    const f = vertical() ? (r.bottom - e.clientY) / r.height : (e.clientX - r.left) / r.width;
+    return 50 + 50 * Math.min(1, Math.max(0, f));
+  }
+  let dragging = false;
+  scale.addEventListener("pointerdown", (e) => { dragging = true; scale.setPointerCapture(e.pointerId); choose(nearest(qFromPointer(e))); });
+  scale.addEventListener("pointermove", (e) => { if (dragging) choose(nearest(qFromPointer(e))); });
+  scale.addEventListener("pointerup", () => { dragging = false; });
+  scale.addEventListener("keydown", (e) => {
+    const i = STOPS.indexOf(sel);
+    if (e.key === "ArrowUp" || e.key === "ArrowRight") { choose(STOPS[Math.min(3, i + 1)]); e.preventDefault(); }
+    if (e.key === "ArrowDown" || e.key === "ArrowLeft") { choose(STOPS[Math.max(0, i - 1)]); e.preventDefault(); }
+  });
+  window.addEventListener("resize", () => { placeScale(); if (D) { setupView(); draw(); } });
+
+  function choose(q) {
+    if (q === sel) return;
+    sel = q; placeScale(); setLabel();
+    const t = video.currentTime, playing = !video.paused && !video.ended, vol = video.volume, muted = video.muted;
+    video.src = `static/tempo/chunk_q${q}.mp4`;
+    video.volume = vol; video.muted = muted;
+    video.addEventListener("loadedmetadata", function once() {
+      video.removeEventListener("loadedmetadata", once);
+      video.currentTime = Math.min(t, Math.max(0, video.duration - 0.05));
+      if (playing) video.play().catch(() => {});
+      draw();
+    });
+    video.load();
+  }
+  function setLabel() {
+    label.innerHTML = sel === 50 ? "q50 · one action per 1/15 s"
+      : `<b style="color:${COLORS["q" + sel]}">q${sel}</b> · with the q50 ghost`;
+  }
+
+  /* data helpers (per-frame arrays sampled at D.fps from T = 0, T = time since the policy start) */
+  function at(arr, T) {
+    const x = Math.min(Math.max(T * D.fps, 0), arr.length - 1), i = Math.floor(x), a = x - i;
+    return i + 1 < arr.length ? arr[i] * (1 - a) + arr[i + 1] * a : arr[i];
+  }
+  function bsearch(a, x) { let lo = 0, hi = a.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (a[m] <= x) lo = m; else hi = m - 1; } return lo; }
+  function pointAt(tc) {
+    const i = bsearch(D.path_t, tc), j = Math.min(i + 1, D.path.length - 1);
+    const a = j > i ? Math.min(1, Math.max(0, (tc - D.path_t[i]) / (D.path_t[j] - D.path_t[i]))) : 0;
+    return [D.path[i][0] * (1 - a) + D.path[j][0] * a, D.path[i][1] * (1 - a) + D.path[j][1] * a];
+  }
+  const segOf = (tc) => Math.min(bsearch(D.seg_bounds, tc), D.seg_names.length - 1);
+  const planOf = (tc) => (tc < planT[0] ? null : D.plans[bsearch(planT, tc)][1]);
+
+  function setupView() {
+    const xs = D.path.map((p) => p[0]), ys = D.path.map((p) => p[1]);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const w = x1 - x0, h = y1 - y0, pad = 0.06 * Math.max(w, h), top = 0.22 * h;   // room for the readout
+    let W = w + 2 * pad, Hh = h + 2 * pad + top;
+    const bb = svg.getBoundingClientRect(), ar = bb.width > 0 && bb.height > 0 ? bb.width / bb.height : 1.5;
+    if (W / Hh < ar) W = Hh * ar; else Hh = W / ar;
+    vb = [(x0 + x1) / 2 - W / 2, y1 + pad - Hh, W, Hh];
+    svg.setAttribute("viewBox", vb.join(" ")); svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  }
+  function el(tag, attrs) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+  let forcedT = null;                                       // test hook (headless browsers without H.264)
+  window.tempoChunkAt = (T, q) => { forcedT = T; if (q) choose(q); draw(); };
+  function draw() {
+    if (!D) return;
+    const T = forcedT !== null ? forcedT : (video.currentTime || 0), u = vb[2] / 140;
+    const shown = sel === 50 ? [0] : [0, STOPS.indexOf(sel)];
+    const runners = shown.map((k) => { const tc = at(D.tc[k], T); return { k, name: D.names[k], tc, si: segOf(tc), col: COLORS[D.names[k]], done: T >= D.done[k] }; });
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    runners.forEach((rn, idx) => {        // current pick/place segment, its action dots, the chunk running now
+      const b0 = D.seg_bounds[rn.si], b1 = D.seg_bounds[rn.si + 1];
+      const pts = D.path.filter((_, i) => D.path_t[i] >= b0 && D.path_t[i] <= b1);
+      if (pts.length > 1) svg.appendChild(el("polyline", { points: pts.map((p) => p.join(",")).join(" "), fill: "none", stroke: rn.col,
+        "stroke-width": u * 0.5, "stroke-opacity": idx ? 0.9 : 0.6, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+      D.tick_t.forEach((tt, i) => { if (tt >= b0 && tt <= b1)
+        svg.appendChild(el("circle", { cx: D.ticks[i][0], cy: D.ticks[i][1], r: u * 0.42, fill: "#fff", stroke: rn.col, "stroke-width": u * 0.18 })); });
+      const pl = planOf(rn.tc);
+      if (!rn.done && pl && D.chunks[pl]) D.chunks[pl].forEach((p) =>
+        svg.appendChild(el("circle", { cx: p[0], cy: p[1], r: u * 0.8, fill: "none", stroke: rn.col, "stroke-width": u * 0.22, "stroke-opacity": 0.75 })));
+    });
+    runners.forEach((rn) => { const p = pointAt(rn.tc);
+      svg.appendChild(el("circle", { cx: p[0], cy: p[1], r: u * 1.6, fill: rn.col, stroke: "#111827", "stroke-width": u * 0.3 })); });
+    let html = `<div class="clock">${T.toFixed(2)} s</div>`;
+    runners.forEach((rn) => {
+      const r = D.rate[rn.k][Math.min(Math.round(T * D.fps), D.rate[rn.k].length - 1)];
+      html += `<div class="row"><span class="sw" style="background:${rn.col}"></span><b style="color:${rn.col}">${rn.name}</b>` +
+        (rn.done ? `<span class="done">done ${D.done[rn.k].toFixed(2)} s</span>`
+                 : `<span class="t">×${r.toFixed(2)}</span><span>${D.seg_names[rn.si]}</span>`) + `</div>`;
+    });
+    readout.innerHTML = html;
+  }
+  function loop() { draw(); if (!video.paused && !video.ended) requestAnimationFrame(loop); }
+  video.addEventListener("play", () => { forcedT = null; requestAnimationFrame(loop); });
+  ["seeked", "timeupdate", "loadeddata", "pause"].forEach((ev) => video.addEventListener(ev, draw));
+
+  placeScale(); setLabel();
+  fetch("static/data/chunk.json").then((r) => r.json()).then((j) => { D = j; planT = D.plans.map((p) => p[0]); setupView(); draw(); })
+    .catch((e) => { readout.textContent = "Could not load chunk data: " + e; });
+})();

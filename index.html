@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124012">
-<link rel="stylesheet" href="static/css/tempo.css?v=5">
-<script src="static/js/tempo.js?v=5" defer></script>
+<link rel="stylesheet" href="static/css/tempo.css?v=6">
+<script src="static/js/tempo.js?v=6" defer></script>
 </head>
 <body>
 
@@ -124,26 +124,39 @@
       </figure>
     </div>
   </section>
-<section id="inference-time" class="tempo-explorer"><div class="container">
+<section id="inference-time" class="tempo"><div class="container">
 <h2 class="section-title">Control the pace at inference time</h2>
-<p class="lead">The same motion can follow different clocks. Compare synchronized footage and only the currently active pick/place segment.</p>
-<nav class="tasks" aria-label="Choose a task"><button data-task="cup" aria-pressed="true">Cup stacking <span>q99</span></button><button data-task="towel" aria-pressed="false">Towel folding <span>q95</span></button><button data-task="trash" aria-pressed="false">Trash cleanup <span>q99</span></button></nav>
-<div class="workspace"><section class="comparison" aria-label="Synchronized comparison"><div class="video-labels"><div><i class="cyan"></i> Fixed 15 Hz clock <small>Reconstructed from the same footage</small></div><div><i class="gold"></i> Ours <small>Recorded execution · real time</small></div></div>
-<div class="video-stage"><video id="motion" controls playsinline muted preload="metadata" aria-label="Reconstructed fixed clock on the left, recorded execution on the right"></video></div>
-<div class="transport"><button id="replay">↺ Replay</button><a id="download" href="#" download>Download split video ↗</a><span id="clock">0.00 s</span></div></section>
-<div class="sound"><button id="sound" aria-pressed="false">Enable tempo sound</button><label for="volume">Volume <input id="volume" type="range" min="0" max="100" value="40"></label><p>Bass-heavy acceleration sound: rising revs and a low-end swell as tempo increases. Added effect, not robot audio.</p></div></div>
-<p class="note">The left view is a timing reconstruction of the same rollout, not a separately evaluated baseline policy. Both views share the same wall clock. The right view plays at its recorded speed.</p>
-<p class="note">Cup: second release; towel and trash: last release. Towel footage uses q95; cup and trash use q99. Sounds stop when Ours completes.</p><p id="error" class="error" role="alert" hidden></p>
-<div class="chunk-lab"><h3>One path. Four clocks.</h3>
-<p>Run all three comparisons together. Following v18 B, each runner shows only its current pick/place segment. Previous segments disappear.</p>
-<div class="chunk-controls"><button id="chunk-play" disabled>▶ Run full Cup</button><span id="chunk-time">Loading synchronized frames…</span></div>
-<div class="chunk-triptych">
-<article class="chunk-card"><h4>q50 vs q90</h4><svg id="chunk-q90" viewBox="0 0 380 260" role="img" aria-label="Fixed 3D motion: q50 versus q90"></svg><div class="frame-labels"><span>○ q50 / 1×</span><span>● q90</span></div><canvas id="frames-q90" width="360" height="300" role="img" aria-label="Synchronized q50 and q90 footage"></canvas><p id="time-q90"></p></article>
-<article class="chunk-card"><h4>q50 vs q95</h4><svg id="chunk-q95" viewBox="0 0 380 260" role="img" aria-label="Fixed 3D motion: q50 versus q95"></svg><div class="frame-labels"><span>○ q50 / 1×</span><span>● q95</span></div><canvas id="frames-q95" width="360" height="300" role="img" aria-label="Synchronized q50 and q95 footage"></canvas><p id="time-q95"></p></article>
-<article class="chunk-card"><h4>q50 vs q99</h4><svg id="chunk-q99" viewBox="0 0 380 260" role="img" aria-label="Fixed 3D motion: q50 versus q99"></svg><div class="frame-labels"><span>○ q50 / 1×</span><span>● q99</span></div><canvas id="frames-q99" width="360" height="300" role="img" aria-label="Synchronized q50 and q99 footage"></canvas><p id="time-q99"></p></article>
-</div>
-<p class="note">Same recorded Cup motion through the second release, replayed with the v18/v20 timing reconstruction. Blue ghost: nominal 15 Hz (q50 / 1×). Colored point: selected tempo. The footage and measured 3D path use the same source timestamp. These are timing replays, not three separate robot executions or a new controller solve.</p></div>
+<p class="lead">Our policy predicts how fast each action should run. On the left, the same rollout replayed at one action every 1/15 s; on the right, the recorded execution with the predicted tempo. Turn the sound on in the player: the engine revs with the speed-up.</p>
 
+<nav class="tempo-tabs" role="tablist" aria-label="Task">
+  <button role="tab" data-task="trash" aria-selected="true">Trash cleanup <span>q99</span></button>
+  <button role="tab" data-task="cup" aria-selected="false">Cup stacking <span>q99</span></button>
+  <button role="tab" data-task="towel" aria-selected="false">Towel folding <span>q95</span></button>
+</nav>
+<figure class="tempo-split">
+  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4"
+         aria-label="Left: the same footage at one action per 1/15 s. Right: recorded execution with the predicted tempo."></video>
+  <figcaption>The dial on the right video shows the live speed-up over one action per 1/15 s: <b>1×</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up. Sound is synthesized from the same speed-up; it is not robot audio.</figcaption>
+</figure>
+
+<h3 class="tempo-sub">One path, four clocks</h3>
+<p class="tempo-text">The same recorded Cup motion replayed on four tempo channels. <b>q50</b> (one action per 1/15 s) always runs; pick a faster channel on the scale to race it against q50. The video overlays the q50 run as a faint ghost.</p>
+<div class="chunk">
+  <div class="chunk-video">
+    <video id="chunk-video" controls playsinline preload="metadata" src="static/tempo/chunk_q50.mp4" aria-label="Cup footage on the selected clock with the q50 ghost"></video>
+    <p id="chunk-video-label" class="chunk-label"></p>
+  </div>
+  <div class="chunk-view">
+    <svg id="chunk-svg" role="img" aria-label="End-effector path: current pick/place segment and the runners of q50 and the selected channel"></svg>
+    <div id="chunk-readout" class="chunk-readout"></div>
+  </div>
+  <div class="qscale" id="qscale" role="slider" tabindex="0" aria-label="Tempo channel" aria-valuemin="50" aria-valuemax="99" aria-valuenow="50">
+    <div class="qscale-track"><div class="qscale-fill"></div><div class="qscale-thumb"></div></div>
+    <div class="qscale-ticks"></div>
+    <p class="qscale-caption">tempo<br>quantile</p>
+  </div>
+</div>
+<p class="tempo-note">All four are timing replays of one q99 rollout (dots: one action each, 1/15 s apart on the action clock; rings: the action chunk running at that moment). Times are measured from the policy start; done = second cup released.</p>
 </div></section>
 </main>
 
