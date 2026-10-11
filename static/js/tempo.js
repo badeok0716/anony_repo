@@ -70,7 +70,7 @@
     if (q === sel) return;
     sel = q; placeScale(); setLabel();
     const t = video.currentTime, playing = !video.paused && !video.ended, vol = video.volume, muted = video.muted;
-    video.src = `static/tempo/chunk_q${q}.mp4`;
+    video.src = `static/tempo/chunk_q${q}.mp4?v=2`;
     video.volume = vol; video.muted = muted;
     video.addEventListener("loadedmetadata", function once() {
       video.removeEventListener("loadedmetadata", once);
