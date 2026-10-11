@@ -1,4 +1,5 @@
 # Interactive tempo demo
+Latest consolidated handoff (2026-10-11): [tools/PAGE_WORK_HANDOFF_20261011.md](tools/PAGE_WORK_HANDOFF_20261011.md). Use it for the current implementation; historical sections below describe superseded versions.
 ## Current revision: v18 B only (October 10)
 
 Supersedes the full-path view below: phase boundaries now come directly from v18/v20's `gripper_events` and `v19_segments.segments(..., 'B')`. Each runner shows only its current reach/pick or carry/place segment; earlier segments are removed, not accumulated. Spatial projection remains fixed across phase changes.
