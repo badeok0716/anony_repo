@@ -1,5 +1,5 @@
 /* Inference-time tempo section (rebuilt 2026-10-11).
-   1) task tabs switch the split video (speedometer + engine sound are inside the MP4s);
+   1) task tabs switch the split video (speedometer inside the MP4s; no sound);
    2) chunk explorer: video on the selected clock (q50 ghost overlaid), one 3D view with the q50 runner and the
       selected runner on their current pick/place segment, and a quantile scale (50..100, positions to scale). */
 (function () {
@@ -13,7 +13,7 @@
       document.querySelectorAll(".tempo-tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
       const vol = split.volume, muted = split.muted;
       split.pause();
-      split.src = `static/tempo/split_${b.dataset.task}.mp4?v=4`;
+      split.src = `static/tempo/split_${b.dataset.task}.mp4?v=5`;
       split.volume = vol; split.muted = muted;
       split.load();
     });
@@ -70,7 +70,7 @@
     if (q === sel) return;
     sel = q; placeScale(); setLabel();
     const t = video.currentTime, playing = !video.paused && !video.ended, vol = video.volume, muted = video.muted;
-    video.src = `static/tempo/chunk_q${q}.mp4?v=2`;
+    video.src = `static/tempo/chunk_q${q}.mp4?v=3`;
     video.volume = vol; video.muted = muted;
     video.addEventListener("loadedmetadata", function once() {
       video.removeEventListener("loadedmetadata", once);

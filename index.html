@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124013">
 <link rel="stylesheet" href="static/css/tempo.css?v=15">
-<script src="static/js/tempo.js?v=14" defer></script>
+<script src="static/js/tempo.js?v=15" defer></script>
 </head>
 <body>
 
@@ -492,7 +492,7 @@
 
 <figcaption>Choose the pace as a quantile of the speed prior, i.e. of the speeds demonstrated for the same motion across the training data (q90, q95, q99), or keep the default step of 1/15 s (q50).</figcaption>
 </figure>
-<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and our controller executes that tempo within the robot's limits. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound in the player: the engine revs with the speed-up.</p>
+<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and our controller executes that tempo within the robot's limits. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run.</p>
 
 <nav class="tempo-tabs" role="tablist" aria-label="Task">
   <button role="tab" data-task="trash" aria-selected="true">Trash cleanup <span>q99</span></button>
@@ -500,7 +500,7 @@
   <button role="tab" data-task="towel" aria-selected="false">Towel folding <span>q95</span></button>
 </nav>
 <figure class="tempo-split">
-  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=4"
+  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=5"
          aria-label="Left: the same footage at one action per 1/15 s. Right: recorded execution at the executed tempo."></video>
   <figcaption>The dial on the right video shows the executed speed-up over one action per 1/15 s, live: <b>0%</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.</figcaption>
 </figure>
@@ -509,7 +509,7 @@
 <p class="tempo-text">The same recorded Cup motion replayed on four tempo channels. <b>q50</b> (one action per 1/15 s) always runs; pick a faster channel on the scale to race it against q50. The video overlays the q50 run as a faint ghost.</p>
 <div class="chunk">
   <div class="chunk-video">
-    <video id="chunk-video" controls playsinline preload="metadata" src="static/tempo/chunk_q50.mp4?v=2" aria-label="Cup footage on the selected clock with the q50 ghost"></video>
+    <video id="chunk-video" controls playsinline preload="metadata" src="static/tempo/chunk_q50.mp4?v=3" aria-label="Cup footage on the selected clock with the q50 ghost"></video>
     <p id="chunk-video-label" class="chunk-label"></p>
   </div>
   <div class="chunk-view">
