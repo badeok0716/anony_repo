@@ -62,19 +62,32 @@ def make_loop(seg, xf=0.4):
     return np.concatenate([body, tail * (1 - w) + a * w], axis=1)       # end crossfades into the start
 
 
-def engine(rates, done, fps):
+ENGINES = {   # CC0 recordings (Freesound id, loop segment s, base playback speed, pitch exponent on the speed-up)
+    "firebird": ("/storage/always216/ROBOT/tempo_viz_20261004/engine_cc0/cc0_157142.wav", 0.35, 3.7, 0.92, 0.5),   # #157142 cr4sht3st, 1975 Pontiac Firebird V8, free exhaust
+    "muscle": ("/storage/always216/ROBOT/tempo_viz_20261004/engine_cc0/cc0_535038.wav", 0.05, 2.15, 0.9, 0.5),    # #535038 FreeCarSoundsGaming, muscle car idle (loop-edited)
+    "maserati": (SRC, 0.3, 4.8, 0.8, 0.5),                                                                        # #585215, played lower than recorded
+}
+
+
+def engine(rates, done, fps, which="maserati"):
+    src, t0, t1, base, ex = ENGINES[which]
     n, r, dn = per_sample(rates, done, fps)
     if dn.any():
         i0 = np.argmax(dn); k = np.arange(n - i0) / SR; r[i0:] = 0.95 + (r[i0] - 0.95) * np.exp(-k / 0.6)
     s = inertia(r, 0.12, 0.35)
-    loop = make_loop(denoise(read_wav(SRC), 0.3, 4.8)); L = loop.shape[1]
-    pos = np.cumsum(np.clip(s, 0.6, 2.2)) % L                        # varispeed read pointer (pitch = speed = rpm)
+    loop = make_loop(denoise(read_wav(src), t0, t1), xf=min(0.4, 0.15 * (t1 - t0))); L = loop.shape[1]
+    sp = base * np.clip(s, 0.6, 2.2) ** ex                         # varispeed (pitch = speed = rpm), compressed so it stays deep
+    pos = np.cumsum(sp) % L
     i0 = np.floor(pos).astype(int); fr = pos - i0; i1 = (i0 + 1) % L
     y = loop[:, i0] * (1 - fr) + loop[:, i1] * fr
+    # weight: an octave-down copy of the same engine (half-speed read) under it, and no rasp above 2.5 kHz
+    ph = np.cumsum(sp / 2) % L; j0 = np.floor(ph).astype(int); jf = ph - j0; j1 = (j0 + 1) % L
+    sub = signal.sosfilt(signal.butter(4, 220 / (SR / 2), output="sos"), loop[:, j0] * (1 - jf) + loop[:, j1] * jf, axis=1)
+    y = signal.sosfilt(signal.butter(4, 2500 / (SR / 2), output="sos"), y, axis=1) + 0.7 * sub
     ds = np.gradient(s) * SR; thr = np.clip(signal.lfilter([0.0005], [1, -0.9995], np.clip(ds, 0, None)) * 2.0, 0, 1)
-    hi = y - signal.sosfilt(signal.butter(2, 1200 / (SR / 2), output="sos"), y, axis=1)
-    y = y + 0.6 * thr * hi                                           # brighter while speeding up
-    y *= (0.8 + 0.25 * thr + 0.12 * np.clip(s - 1, -0.3, 1))
+    hi = y - signal.sosfilt(signal.butter(2, 700 / (SR / 2), output="sos"), y, axis=1)
+    y = y + 0.4 * thr * hi                                           # a little more growl while speeding up
+    y *= (0.75 + 0.35 * thr + 0.3 * np.clip(s - 1, -0.3, 1))          # the speed-up shows more in loudness than in pitch
     env = np.ones(n); fi = int(0.3 * SR); env[:fi] = np.linspace(0, 1, fi) ** 2
     if dn.any():
         i0 = np.argmax(dn); fo = min(n - i0, int(1.8 * SR)); env[i0:i0 + fo] *= np.linspace(1, 0, fo) ** 1.5; env[i0 + fo:] = 0
@@ -144,13 +157,14 @@ def write_wav(path, x):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("log"); ap.add_argument("video"); ap.add_argument("out")
     ap.add_argument("--mode", choices=["engine", "musicbox"], required=True)
+    ap.add_argument("--engine", choices=list(ENGINES), default="firebird")
     a = ap.parse_args()
     Lg = json.load(open(a.log)); fr = Lg["frames"]; fps = Lg.get("fps", 30.0)
     rates = np.array([f["r"] for f in fr], float); done = np.array([f["done"] for f in fr], bool)
     hms = subprocess.run([FF, "-i", a.video], capture_output=True, text=True).stderr.split("Duration: ")[1].split(",")[0].split(":")
     nv = int(round((3600 * float(hms[0]) + 60 * float(hms[1]) + float(hms[2])) * fps))
     if nv > len(rates): rates = np.r_[rates, np.full(nv - len(rates), rates[-1])]; done = np.r_[done, np.full(nv - len(done), done[-1])]
-    x = engine(rates, done, fps) if a.mode == "engine" else musicbox(rates, done, fps)
+    x = engine(rates, done, fps, a.engine) if a.mode == "engine" else musicbox(rates, done, fps)
     wav = a.out.replace(".mp4", ".wav"); write_wav(wav, x)
     subprocess.run([FF, "-v", "error", "-y", "-i", a.video, "-i", wav, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac",
                     "-b:a", "192k", "-shortest", "-movflags", "+faststart", a.out], check=True)

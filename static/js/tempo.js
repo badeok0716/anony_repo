@@ -13,7 +13,7 @@
       document.querySelectorAll(".tempo-tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
       const vol = split.volume, muted = split.muted;
       split.pause();
-      split.src = `static/tempo/split_${b.dataset.task}.mp4?v=3`;
+      split.src = `static/tempo/split_${b.dataset.task}.mp4?v=4`;
       split.volume = vol; split.muted = muted;
       split.load();
     });

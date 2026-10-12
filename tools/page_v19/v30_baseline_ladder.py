@@ -41,7 +41,7 @@ TASKS = {
  "trash": dict(portrait=False, timeout=60.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/trash/trash(w／o control, tempo align)", anchor=(82, T_MOVE), end=("0 / 15", RED)),
    dict(title="Default 1× + high-gain PD", path=DEMO + "/Trash_demo/trash_raw_1x_high_gain_pd_reflex_red_light.mov", anchor=(0, T_MOVE), end=("0 / 15 · reflex stop (red light)", RED),
-        last=89, ring=(61, 244, 326, 34), nodim=True),
+        last=89),   # stop while the red light is still on (red frames 61-89, green again from 90)
    dict(title="Default 1× + our controller", path=DEMO + "/Trash_demo/trash_raw_1x_control.mov", anchor=(0, T_MOVE), end=("9 / 15", AMBER)),
    dict(title="Ours (q99) + our controller", path=O + "/drive/trash_ours.mp4", anchor=(80, 0.128), done=48.26, done_text="15 / 15")]),
 }

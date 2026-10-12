@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124013">
 <link rel="stylesheet" href="static/css/tempo.css?v=15">
-<script src="static/js/tempo.js?v=13" defer></script>
+<script src="static/js/tempo.js?v=14" defer></script>
 </head>
 <body>
 
@@ -48,7 +48,7 @@
 
       <figure class="demo ladder">
         <h3 class="demo-title">Trash cleanup</h3>
-        <video src="static/tempo/ladder_trash.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
+        <video src="static/tempo/ladder_trash.mp4?v=6" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
         <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.26 s)</span></span><br>The high-gain PD run ends in a <b class="warn">reflex stop (red light)</b>: stiff tracking asks for more power and speed than the arm allows.<br>Our controller keeps every chunk within the arm's limits.</figcaption>
       </figure>
       <figure class="demo ladder">
@@ -500,7 +500,7 @@
   <button role="tab" data-task="towel" aria-selected="false">Towel folding <span>q95</span></button>
 </nav>
 <figure class="tempo-split">
-  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=3"
+  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=4"
          aria-label="Left: the same footage at one action per 1/15 s. Right: recorded execution at the executed tempo."></video>
   <figcaption>The dial on the right video shows the executed speed-up over one action per 1/15 s, live: <b>0%</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.</figcaption>
 </figure>
