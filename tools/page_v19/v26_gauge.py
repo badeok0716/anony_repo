@@ -4,6 +4,11 @@ import math
 LO, HI = 0.4, 2.5          # dial range (x), symmetric in log about 1x
 TICKS = (0.5, 0.75, 1.0, 1.5, 2.0, 2.5)
 
+def pct(r):
+    """speed-up as a percentage over one action per 1/15 s (user 2026-10-12: +42% reads stronger than x1.42)."""
+    v = round((r - 1) * 100)
+    return "0%" if v == 0 else f"{v:+d}%".replace("-", "−")
+
 def angle(r):
     """-90 deg (left) .. 0 (top, 1x) .. +90 deg (right), log scale."""
     r = min(max(r, LO), HI)
@@ -24,9 +29,9 @@ def draw_gauge(d, cx, cy, R, r, font, label=None, gold=(240, 170, 30), slow=(110
         a = angle(tv)
         d.line((*_pt(cx, cy, R - 12, a), *_pt(cx, cy, R + 1, a)), fill=(235, 235, 240, 255), width=2 if tv != 1.0 else 3)
         if tv in (0.5, 1.0, 2.0):
-            d.text(_pt(cx, cy, R - 24, a), f"{tv:g}×", font=font("Bold", max(10, int(R * 0.2))), fill=(220, 220, 228), anchor="mm")
+            d.text(_pt(cx, cy, R - 26, a), pct(tv), font=font("Bold", max(10, int(R * 0.2))), fill=(220, 220, 228), anchor="mm")
     a = angle(r)
     d.line((cx, cy, *_pt(cx, cy, R - 10, a)), fill=(255, 255, 255, 255), width=4)
     d.ellipse((cx - 6, cy - 6, cx + 6, cy + 6), fill=(255, 255, 255, 255))
-    d.text((cx, cy + 6), label or f"×{r:.2f}", font=font("Black", max(13, int(R * 0.32))),
+    d.text((cx, cy + 6), label or pct(r), font=font("Black", max(13, int(R * 0.32))),
            fill=gold if r > 1.01 else (slow if r < 0.99 else (235, 235, 240)), anchor="mt")

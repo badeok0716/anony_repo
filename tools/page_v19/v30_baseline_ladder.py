@@ -26,6 +26,7 @@ RED, GREEN, AMBER, BLUE = (220, 38, 38), (34, 160, 70), (217, 119, 6), (59, 130,
 #  PD and the towel baselines are shifted later by eye (+0.25 / +0.4, +0.3, +0.2 s). The 10 s timeout stays on the policy clock.
 #  Before a clip's first recorded frame the panel holds that frame. Cut at the task timeout (cup/towel 10 s, trash 60 s).
 T_MOVE = 0.19
+BADGE_UP = 66        # badge bottom 66 px above the panel bottom: clear of the robot base status light (trash HG red light)
 TASKS = {
  "cup": dict(portrait=True, timeout=10.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/cup/cup(w／o control,tempo align).MOV", anchor=(64, T_MOVE), done=8.2 + T_MOVE),
@@ -34,12 +35,13 @@ TASKS = {
    dict(title="Ours (q99) + our controller", path=O + "/orig/cup_sdr30.mp4", anchor=(0, 0.264), done=3.162)]),
  "towel": dict(portrait=True, timeout=10.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/towel/towel(w／o control, tempo align)", cx=0.30, crop_aspect=0.80, anchor=(79, T_MOVE + 0.40), end=("failure", RED)),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", anchor=(13, T_MOVE + 0.30), end=("failure · joint acc limit (red light)", RED)),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", anchor=(13, T_MOVE + 0.30), end=("failure · joint acc limit", RED)),
    dict(title="Default 1× + our controller", path=DEMO + "/Towel_demo/towel_raw_1x_failure.mov", anchor=(1, T_MOVE + 0.20), end=("failure", RED)),
    dict(title="Ours (q95) + our controller", path=O + "/orig/towel_30.mp4", anchor=(0, 0.451), done=4.487)]),
  "trash": dict(portrait=False, timeout=60.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/trash/trash(w／o control, tempo align)", anchor=(82, T_MOVE), end=("0 / 15", RED)),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Trash_demo/trash_raw_1x_high_gain_pd_reflex_red_light.mov", anchor=(0, T_MOVE), end=("0 / 15 · reflex stop (red light)", RED)),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Trash_demo/trash_raw_1x_high_gain_pd_reflex_red_light.mov", anchor=(0, T_MOVE), end=("0 / 15 · reflex stop (red light)", RED),
+        last=89, ring=(61, 244, 326, 34), nodim=True),
    dict(title="Default 1× + our controller", path=DEMO + "/Trash_demo/trash_raw_1x_control.mov", anchor=(0, T_MOVE), end=("9 / 15", AMBER)),
    dict(title="Ours (q99) + our controller", path=O + "/drive/trash_ours.mp4", anchor=(80, 0.128), done=48.26, done_text="15 / 15")]),
 }
@@ -89,12 +91,14 @@ def main(task, out):
     clips = []
     for pn in cfg["panels"]:
         src = sdr_frames(pn["path"], W, H, pn.get("cx", 0.5), pn.get("crop_aspect"), 0)
+        if pn.get("last") is not None: src = src[:pn["last"] + 1]          # trash HG: stop while the red light is still on
         f0, t0 = pn["anchor"]
         last_T = min(cfg["timeout"], t0 + (len(src) - 1 - f0) / FPS)       # clip end on the policy clock
         if t0 + (len(src) - 1 - f0) / FPS > cfg["timeout"] and pn.get("done") is None and pn.get("end"):
             pn["end"] = (pn["end"][0] + f" · {cfg['timeout']:g} s timeout", pn["end"][1])
         nT = int(round(last_T * FPS)) + 1
-        c = [src[int(np.clip(f0 + round((k / FPS - t0) * FPS), 0, len(src) - 1))] for k in range(nT)]
+        pn["_idx"] = [int(np.clip(f0 + round((k / FPS - t0) * FPS), 0, len(src) - 1)) for k in range(nT)]
+        c = [src[i] for i in pn["_idx"]]
         print(f"  {pn['title']}: anchor {pn['anchor']}, held frames {sum(1 for k in range(nT) if f0 + round((k / FPS - t0) * FPS) < 0)}, ends {last_T:.2f} s", flush=True)
         clips.append(c)
     n = max(len(c) for c in clips) + FPS                         # +1 s hold
@@ -107,15 +111,18 @@ def main(task, out):
     fb = font("Bold", 22)
     def bottom(d, x, y, txt, col):
         tw = d.textlength(txt, font=fb)
-        d.rounded_rectangle((x + W / 2 - tw / 2 - 14, y + H - 54, x + W / 2 + tw / 2 + 14, y + H - 16), 9, fill=col + (240,))
-        d.text((x + W / 2, y + H - 35), txt, font=fb, fill=(255, 255, 255), anchor="mm")
+        d.rounded_rectangle((x + W / 2 - tw / 2 - 14, y + H - BADGE_UP - 38, x + W / 2 + tw / 2 + 14, y + H - BADGE_UP), 9, fill=col + (240,))
+        d.text((x + W / 2, y + H - BADGE_UP - 19), txt, font=fb, fill=(255, 255, 255), anchor="mm")
     for k in range(n):
         cv = Image.new("RGB", (CW, CH), BG); d = ImageDraw.Draw(cv, "RGBA")
         for i, (pn, c, (x, y)) in enumerate(zip(cfg["panels"], clips, pos)):
             ended = k >= len(c); f = c[min(k, len(c) - 1)]
             img = Image.fromarray(f)
-            if ended and not pn.get("done"): img = Image.blend(img, Image.new("RGB", img.size, (0, 0, 0)), 0.35)
+            if ended and not pn.get("done") and not pn.get("nodim"): img = Image.blend(img, Image.new("RGB", img.size, (0, 0, 0)), 0.35)
             cv.paste(img, (x, y))
+            if pn.get("ring") and pn["_idx"][min(k, len(c) - 1)] >= pn["ring"][0]:   # mark the robot's red status light
+                _, rx, ry, rr = pn["ring"]
+                d.ellipse((x + rx - rr, y + ry - rr, x + rx + rr, y + ry + rr), outline=(255, 60, 60, 255), width=4)
             d.text((x, y - 30), pn["title"], font=font("Bold", 20), fill=(245, 197, 66) if i == 3 else FG)
             t = min(k, len(c) - 1) / FPS; off = 0.0; done = pn.get("done")
             if done is not None and t >= done:                     # completion: timer turns green and stops

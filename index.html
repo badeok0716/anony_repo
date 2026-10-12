@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124013">
 <link rel="stylesheet" href="static/css/tempo.css?v=15">
-<script src="static/js/tempo.js?v=11" defer></script>
+<script src="static/js/tempo.js?v=12" defer></script>
 </head>
 <body>
 
@@ -48,18 +48,18 @@
 
       <figure class="demo ladder">
         <h3 class="demo-title">Trash cleanup</h3>
-        <video src="static/tempo/ladder_trash.mp4?v=3" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
+        <video src="static/tempo/ladder_trash.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
         <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.26 s)</span></span><br>The high-gain PD run ends in a <b class="warn">reflex stop (red light)</b>: stiff tracking asks for more power and speed than the arm allows.<br>Our controller keeps every chunk within the arm's limits.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Cup stacking</h3>
-        <video src="static/tempo/ladder_cup.mp4?v=4" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
+        <video src="static/tempo/ladder_cup.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
         <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.39 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.50 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
-        <video src="static/tempo/ladder_towel.mp4?v=4" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>The high-gain PD run ends in a <b class="warn">joint acc limit (red light)</b>: a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2;.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
+        <video src="static/tempo/ladder_towel.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>The high-gain PD run ends in a <b class="warn">joint acc limit</b>: a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2;.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
       </figure>
 
 
@@ -492,7 +492,7 @@
 
 <figcaption>Choose the pace as a quantile of the speed prior, i.e. of the speeds demonstrated for the same motion across the training data (q90, q95, q99), or keep the default step of 1/15 s (q50).</figcaption>
 </figure>
-<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and the robot follows that tempo. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound in the player: the engine revs with the speed-up.</p>
+<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and our controller executes that tempo within the robot's limits. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound in the player: the engine revs with the speed-up.</p>
 
 <nav class="tempo-tabs" role="tablist" aria-label="Task">
   <button role="tab" data-task="trash" aria-selected="true">Trash cleanup <span>q99</span></button>
@@ -500,9 +500,9 @@
   <button role="tab" data-task="towel" aria-selected="false">Towel folding <span>q95</span></button>
 </nav>
 <figure class="tempo-split">
-  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4"
-         aria-label="Left: the same footage at one action per 1/15 s. Right: recorded execution with the predicted tempo."></video>
-  <figcaption>The dial on the right video shows the live speed-up over one action per 1/15 s: <b>1×</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.</figcaption>
+  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=2"
+         aria-label="Left: the same footage at one action per 1/15 s. Right: recorded execution at the executed tempo."></video>
+  <figcaption>The dial on the right video shows the executed speed-up over one action per 1/15 s, live: <b>0%</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.</figcaption>
 </figure>
 
 <h3 class="tempo-sub">One path, four clocks</h3>
