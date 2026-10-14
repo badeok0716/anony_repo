@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
 <link rel="stylesheet" href="static/css/style.css?v=d8124013">
-<link rel="stylesheet" href="static/css/tempo.css?v=15">
-<script src="static/js/tempo.js?v=15" defer></script>
+<link rel="stylesheet" href="static/css/tempo.css?v=16">
+<script src="static/js/tempo.js?v=17" defer></script>
 </head>
 <body>
 
@@ -492,7 +492,7 @@
 
 <figcaption>Choose the pace as a quantile of the speed prior, i.e. of the speeds demonstrated for the same motion across the training data (q90, q95, q99), or keep the default step of 1/15 s (q50).</figcaption>
 </figure>
-<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and our controller executes that tempo within the robot's limits. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run.</p>
+<p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and our controller executes that tempo within the robot's limits. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound: the engine speeds up when the executed tempo rises and slows down when it falls.</p>
 
 <nav class="tempo-tabs" role="tablist" aria-label="Task">
   <button role="tab" data-task="trash" aria-selected="true">Trash cleanup <span>q99</span></button>
@@ -500,9 +500,9 @@
   <button role="tab" data-task="towel" aria-selected="false">Towel folding <span>q95</span></button>
 </nav>
 <figure class="tempo-split">
-  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=5"
+  <video id="split-video" controls playsinline preload="metadata" src="static/tempo/split_trash.mp4?v=7"
          aria-label="Left: the same footage at one action per 1/15 s. Right: recorded execution at the executed tempo."></video>
-  <figcaption>The dial on the right video shows the executed speed-up over one action per 1/15 s, live: <b>0%</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.</figcaption>
+  <figcaption>The dial on the right video shows the executed speed-up over one action per 1/15 s, live: <b>0%</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.<br><span class="tempo-credit">Engine sound: <a href="https://freesound.org/people/enginemusic/sounds/43484/">&ldquo;ferrari355underhood4.mp3&rdquo;</a> by enginemusic, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>; cut and resequenced so its rpm follows the dial.</span></figcaption>
 </figure>
 
 <h3 class="tempo-sub">One path, four clocks</h3>

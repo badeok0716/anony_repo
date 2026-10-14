@@ -83,3 +83,5 @@
 .ladder .warn { color: #dc2626; }
 .ladder code { font-size: 0.85em; background: var(--panel); padding: 0 4px; border-radius: 4px; }
 .ladder-note { font-size: 0.85rem; color: var(--faint); }
+.tempo-credit { font-size: 0.8rem; color: var(--faint); }
+.tempo-credit a { color: inherit; }
