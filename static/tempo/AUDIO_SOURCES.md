@@ -1,9 +1,8 @@
-# Audio sources for the inference-time split videos
+# Audio sources (sound preview page only; the main page has no sound)
 
-All engine sounds are CC0 1.0 (public domain) recordings from Freesound, denoised (spectral subtraction, 30 Hz high-pass),
-looped, and played back at a speed that follows the executed speed-up, with an octave-down layer of the same recording
-and a 2.5 kHz low-pass (tools/page_v19/v36_tempo_audio.py).
+CC0 1.0 (public domain) engine recordings from Freesound, denoised (spectral subtraction), looped, and played back a little
+faster and louder with the executed speed-up; +6 dB below 150 Hz, 6 kHz low-pass (tools/page_v19/v39_engine_audio.py).
 
-- Option A: "idle.wav" by cr4sht3st, Freesound #157142 (1975 Pontiac Firebird V8), https://freesound.org/people/cr4sht3st/sounds/157142/
-- Option B: "Car Engine: Maserati GranTurismo Switch to Sport Mode and Launch" by myeclecticself, Freesound #585215,
-  https://freesound.org/people/myeclecticself/sounds/585215/ (idle at 0.3-4.8 s, played at 0.8x)
+- A: "Lambo Start Up Sound" by JaimeLopes, Freesound #564373 (Lamborghini Huracán EVO Spyder V10),
+  https://freesound.org/people/JaimeLopes/sounds/564373/ — start-up 0.85–3.2 s, idle loop 3.2–19.5 s
+- B: "idle.wav" by cr4sht3st, Freesound #157142 (1975 Pontiac Firebird V8), https://freesound.org/people/cr4sht3st/sounds/157142/
