@@ -49,17 +49,17 @@
       <figure class="demo ladder">
         <h3 class="demo-title">Trash cleanup</h3>
         <video src="static/tempo/ladder_trash.mp4?v=6" controls muted playsinline preload="metadata" aria-label="Trash cleanup: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.26 s)</span></span><br>The high-gain PD run ends in a <b class="warn">reflex stop (red light)</b>: stiff tracking asks for more power and speed than the arm allows.<br>Our controller keeps every chunk within the arm's limits.</figcaption>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <b class="warn">0/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <b class="warn">0/15</b></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <b>9/15</b> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <b class="good">15/15</b> (48.26 s)</span></span><br>The high-gain PD run ends in a <b class="warn">reflex stop (red light)</b> by violating the arm&rsquo;s kinodynamic limits. Our controller keeps every chunk within them.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Cup stacking</h3>
         <video src="static/tempo/ladder_cup.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.39 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.50 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span><br>Higher gains do not make the default policy faster: its own chunks are slow, about 1.8&deg; per step against 3.7&deg; for ours.</figcaption>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.39 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.50 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span></figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
-        <video src="static/tempo/ladder_towel.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>The high-gain PD run ends in a <b class="warn">joint acc limit</b>: a sharp chunk drives the wrist joint to 100&ndash;190 rad/s&sup2;.<br>Our controller keeps it near its 20 rad/s&sup2; limit.</figcaption>
+        <video src="static/tempo/ladder_towel.mp4?v=6" controls muted playsinline preload="metadata" aria-label="Towel folding: four runs side by side, real time"></video>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span></span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 4.49 s</span></span><br>In the high-gain PD run, <b class="warn">the wrist chattered until an emergency stop</b>.</figcaption>
       </figure>
 
 
@@ -358,7 +358,7 @@
 <section id="inference-time" class="tempo"><div class="container">
 <h2 class="section-title">Control the pace at inference time</h2>
 <figure class="tempo-figure">
-<svg class="tempo-fig" viewBox="0 0 1000 404" role="img" aria-label="The action expert outputs 32 values per step; dims 8-10 are three tempo channels. Each channel retimes the same 15-step action chunk.">
+<svg class="tempo-fig" viewBox="0 0 1000 404" role="img" aria-label="The action expert outputs 32 values per step: 7 joints and the gripper (the action, retimed at the default step as q50) and three tempo channels at dims 8-10. Each channel retimes the same 15-step action chunk.">
 <text x="153.0" y="22" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2328">action expert output</text>
 <text x="153.0" y="37" font-size="11" font-weight="400" text-anchor="middle" fill="#59636e">one step · 32 dims</text>
 <rect x="118" y="46" width="70" height="11" rx="2" fill="#dbe4ef" stroke="#cbd5e1" stroke-width="0.8"/>
@@ -377,6 +377,7 @@
 <rect x="118" y="215" width="70" height="11" rx="2" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="0.8"/>
 <rect x="118" y="228" width="70" height="11" rx="2" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="0.8"/>
 <text x="153.0" y="253" font-size="14" font-weight="600" text-anchor="middle" fill="#8c959f">⋮</text>
+<path d="M192,46 Q197,46 197,52 L197,91.0 Q197,97.0 202,97.0 Q197,97.0 197,103.0 L197,142 Q197,148 192,148" fill="none" stroke="#0ea5e9" stroke-width="1.6"/>
 <text x="110" y="95.5" font-size="11" font-weight="400" text-anchor="end" fill="#59636e">7 joints</text>
 <text x="110" y="146" font-size="11" font-weight="400" text-anchor="end" fill="#59636e">gripper</text>
 <text x="110" y="172.5" font-size="11" font-weight="600" text-anchor="end" fill="#b45309">tempo ×3</text>
@@ -398,7 +399,7 @@
 <text x="955.0" y="376" font-size="10" font-weight="400" text-anchor="middle" fill="#8c959f">1 s</text>
 <line x1="440.0" y1="112.0" x2="474.3" y2="104.3" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="3 3"/>
 <circle cx="440.0" cy="112.0" r="5" fill="#fff" stroke="#0ea5e9" stroke-width="1.8" stroke-dasharray="2.5 2"/>
-<text x="256" y="92" font-size="15" font-weight="700" text-anchor="start" fill="#0ea5e9">q50</text>
+<text x="256" y="92" font-size="15" font-weight="700" text-anchor="start" fill="#0ea5e9">q50 retimed action</text>
 <text x="256" y="108" font-size="10" font-weight="400" text-anchor="start" fill="#59636e">default step · 1/15 s</text>
 <polyline points="474.3,104.3 508.7,95.2 543.0,86.9 577.3,77.6 611.7,73.3 646.0,70.0 680.3,68.1 714.7,68.0 749.0,69.6 783.3,75.5 817.7,84.5 852.0,94.1 886.3,102.4 920.7,104.6 955.0,99.5" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-opacity="0.75"/>
 <circle cx="474.3" cy="104.3" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
@@ -417,7 +418,7 @@
 <circle cx="920.7" cy="104.6" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
 <circle cx="955.0" cy="99.5" r="3.6" fill="#fff" stroke="#0ea5e9" stroke-width="1.8"/>
 <text x="964.9999999999999" y="103.52395801810485" font-size="11" font-weight="600" text-anchor="start" fill="#0ea5e9">1.00 s</text>
-<path d="M190,129.5 C228,129.5 216,87 250,87" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="4 4" stroke-opacity="0.8"/>
+<path d="M203,97.0 C241,97.0 216,87 250,87" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-opacity="0.8"/>
 <line x1="440.0" y1="190.0" x2="468.6" y2="182.3" stroke="#8b5cf6" stroke-width="1.6" stroke-dasharray="3 3"/>
 <circle cx="440.0" cy="190.0" r="5" fill="#fff" stroke="#8b5cf6" stroke-width="1.8" stroke-dasharray="2.5 2"/>
 <text x="256" y="170" font-size="15" font-weight="700" text-anchor="start" fill="#8b5cf6">q90</text>

@@ -1,4 +1,4 @@
-"""Inline SVG for the page (2026-10-11): the action expert's 32-dim step output (7 joints, gripper, 3 tempo channels at
+"""Inline SVG for the page (2026-10-11; 2026-10-15: brace over the 8 action cells -> "q50 retimed action"): the action expert's 32-dim step output (7 joints, gripper, 3 tempo channels at
 dims 8-10, padding) -> q50 (default step 1/15 s) and the q90/q95/q99 channels -> the same 15-step chunk on a time axis,
 whose step spacing shrinks with the predicted per-step speed-up. Data: cup rollout 041209, chunk 2 (query 1: grasp, lift, carry), joint 2."""
 import json, sys, numpy as np
@@ -7,9 +7,9 @@ def figure(chunks_json, k=1, joint=1):
     q = json.load(open(chunks_json))["queries"][k]
     a = np.array(q["actions"])[:, joint]; rate = np.exp(np.array(q["tempo"]))           # (15, 3)
     a0 = float(q["state"][joint])                                                       # where the chunk starts
-    rows = [("q50", "default step · 1/15 s", np.full(15, 1.0), "#0ea5e9")] + \
+    rows = [("q50 retimed action", "default step · 1/15 s", np.full(15, 1.0), "#0ea5e9")] + \
            [(n, "tempo channel", rate[:, i], c) for i, (n, c) in enumerate((("q90", "#8b5cf6"), ("q95", "#16a34a"), ("q99", "#d97706")))]
-    W, H = 1000, 404; out = [f'<svg class="tempo-fig" viewBox="0 0 {W} {H}" role="img" aria-label="The action expert outputs 32 values per step; dims 8-10 are three tempo channels. Each channel retimes the same 15-step action chunk.">']
+    W, H = 1000, 404; out = [f'<svg class="tempo-fig" viewBox="0 0 {W} {H}" role="img" aria-label="The action expert outputs 32 values per step: 7 joints and the gripper (the action, retimed at the default step as q50) and three tempo channels at dims 8-10. Each channel retimes the same 15-step action chunk.">']
     T = lambda s, x, y, sz=13, w=400, anc="start", col="#1f2328": out.append(
         f'<text x="{x}" y="{y}" font-size="{sz}" font-weight="{w}" text-anchor="{anc}" fill="{col}">{s}</text>')
     # --- left: one step of the output vector
@@ -24,6 +24,10 @@ def figure(chunks_json, k=1, joint=1):
         if kind == "t": tempo_y.append(y + ch / 2)
         y += ch + 2
     T("⋮", x0 + cw / 2, y + 12, 14, 600, "middle", "#8c959f"); y_end = y + 18
+    # brace over the 8 action cells (7 joints + gripper): the q50 row is this action at the default step (2026-10-15)
+    bx, bw, br = x0 + cw + 4, 5, 6; byt, byb = y0, y0 + 8 * (ch + 2) - 2; bym = (byt + byb) / 2
+    out.append(f'<path d="M{bx},{byt} Q{bx + bw},{byt} {bx + bw},{byt + br} L{bx + bw},{bym - br} Q{bx + bw},{bym} {bx + 2 * bw},{bym} '
+               f'Q{bx + bw},{bym} {bx + bw},{bym + br} L{bx + bw},{byb - br} Q{bx + bw},{byb} {bx},{byb}" fill="none" stroke="#0ea5e9" stroke-width="1.6"/>')
     T("7 joints", x0 - 8, y0 + 3.5 * (ch + 2) + 4, 11, 400, "end", "#59636e")
     T("gripper", x0 - 8, y0 + 7 * (ch + 2) + 9, 11, 400, "end", "#59636e")
     T("tempo ×3", x0 - 8, tempo_y[1] + 4, 11, 600, "end", "#b45309")
@@ -50,9 +54,8 @@ def figure(chunks_json, k=1, joint=1):
         for px, py in pts: out.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="3.6" fill="#fff" stroke="{col}" stroke-width="1.8"/>')
         T(f"{t[-1]:.2f} s", pts[-1][0] + 10, pts[-1][1] + 4, 11, 600, "start", col)
         # connector from the tempo cells (q50: dashed, no channel)
-        sy = tempo_y[r_ - 1] if r_ else tempo_y[0] - 26
-        dash = ' stroke-dasharray="4 4"' if r_ == 0 else ""
-        out.append(f'<path d="M{x0 + cw + 2},{sy} C{x0 + cw + 40},{sy} {lx - 40},{yc + 27} {lx - 6},{yc + 27}" fill="none" stroke="{col}" stroke-width="1.6"{dash} stroke-opacity="0.8"/>')
+        sx0, sy = (x0 + cw + 2, tempo_y[r_ - 1]) if r_ else (bx + 2 * bw + 1, bym)   # q50: from the brace tip
+        out.append(f'<path d="M{sx0},{sy} C{sx0 + 38},{sy} {lx - 40},{yc + 27} {lx - 6},{yc + 27}" fill="none" stroke="{col}" stroke-width="1.6" stroke-opacity="0.8"/>')
     out.append(f'<circle cx="{rx0 + 46}" cy="{H - 14}" r="5" fill="#fff" stroke="#59636e" stroke-width="1.6" stroke-dasharray="2.5 2"/>')
     T("chunk start (arm state when the chunk begins)", rx0 + 58, H - 10, 11, 400, "start", "#59636e")
     out.append(f'<circle cx="{rx0 + 360}" cy="{H - 14}" r="4" fill="#fff" stroke="#59636e" stroke-width="1.6"/>')

@@ -35,7 +35,7 @@ TASKS = {
    dict(title="Ours (q99) + our controller", path=O + "/orig/cup_sdr30.mp4", anchor=(0, 0.264), done=3.162)]),
  "towel": dict(portrait=True, timeout=10.0, panels=[
    dict(title="Default 1× + PD", path=REP + "/towel/towel(w／o control, tempo align)", cx=0.30, crop_aspect=0.80, anchor=(79, T_MOVE + 0.40), end=("failure", RED)),
-   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", anchor=(13, T_MOVE + 0.30), end=("failure · joint acc limit", RED)),
+   dict(title="Default 1× + high-gain PD", path=DEMO + "/Towel_demo/towel_raw_1x_high_gain_pd_j7error.MOV", anchor=(13, T_MOVE + 0.30), end=("failure · wrist chattering", RED)),
    dict(title="Default 1× + our controller", path=DEMO + "/Towel_demo/towel_raw_1x_failure.mov", anchor=(1, T_MOVE + 0.20), end=("failure", RED)),
    dict(title="Ours (q95) + our controller", path=O + "/orig/towel_30.mp4", anchor=(0, 0.451), done=4.487)]),
  "trash": dict(portrait=False, timeout=60.0, panels=[
