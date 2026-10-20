@@ -33,6 +33,18 @@ SOURCES = {
                   base=1.0, ridge=(60, 130, 0.04),
                   credit="Freesound #538212 'TruckRev.wav' by oldestmillennial, CC BY 3.0"),
 }
+# 2026-10-20 round 2 (user: 1/2 had no audible speed-up; keep the Ferrari "wang" but always heavy):
+#   heavy mode = only the low-rpm part of each rev-up + playback below 1x; the speed-up is heard through the read speed.
+SOURCES.update({
+    "f355_heavy": dict(src=E + "cc0_43484.wav", rise=(2.0, 4.5), ref=(0.6, 1.9), ref_t=1.25, base=0.72,
+                       credit="Freesound #43484 ferrari355underhood4.mp3 by enginemusic, CC BY 3.0 (low-rpm part, 0.72x)"),
+    "dubai": dict(src=E + "cc0_457560.wav", rise=(0.85, 3.5), ref=(0.85, 1.0), ref_t=0.9, base=0.8, sweep=(1.83, 1.0),
+                  credit="Freesound #457560 'Acceleration of a Sports Car Engine like Ferrari or Lamborghini or Porsche' by florianreichelt, CC0"),
+    "maserati": dict(src=E + "cc0_585215.wav", rise=(8.0, 9.6), ref=(8.0, 8.15), ref_t=8.05, base=0.85, sweep=(1.6, 1.0),
+                     credit="Freesound #585215 'Car Engine: Maserati GranTurismo Switch to Sport Mode and Launch' by myeclecticself, CC0"),
+    "f360": dict(src=E + "cc0_241083.wav", rise=(10.5, 15.7), ref=(10.5, 10.7), ref_t=10.6, base=0.8, sweep=(1.4, 2.0),
+                 credit="Freesound #241083 'Ferrari 360 Spider - engine sound' by PritzProductions, CC0"),
+})
 WHICH = "f355"
 B = 480                       # 10 ms control blocks
 XF = int(0.15 * SR)
@@ -53,7 +65,9 @@ def render(rates, done, fps):
     C = SOURCES[WHICH]; RISE = C["rise"]; base = C["base"]
     x = read_wav(C["src"]); N = x.shape[1]
     a, b = int(RISE[0] * SR), int(RISE[1] * SR)
-    if C.get("ridge"):            # follow one harmonic line through the rev-up; smooth monotone rpm curve (quadratic fit)
+    if C.get("sweep"):            # rev-up read off the spectrogram: lowest harmonic ratio R over the segment, shape exponent g
+        R, g = C["sweep"]; u = np.arange(b - a) / (b - a); rho_rec = np.ones(N); rho_rec[a:b] = 1 + (R - 1) * u ** g
+    elif C.get("ridge"):            # follow one harmonic line through the rev-up; smooth monotone rpm curve (quadratic fit)
         from rpm_ridge_track import ridge
         tr_, rr_, _ = ridge(x.mean(0), RISE[0], RISE[1], *C["ridge"])
         pc = np.polyfit(tr_ - RISE[0], rr_, 2); tt_ = np.arange(b - a) / SR
@@ -86,6 +100,7 @@ def render(rates, done, fps):
         lo = 0.82
         if (p >= end or ratio > hi or (ratio < lo and rho[k] <= top)) and not (dn[k] and p < end):
             q = float(match(rho[k]))
+            if p >= end: q = min(q, float(max(a, end - int(min(1.2, 0.45 * (b - a) / SR) * SR))))   # at the end: step well back, not to the end again
             if abs(q - p) > 0.05 * SR:
                 jumps += 1; L = XF; idx = p + np.arange(L) * v; i0 = np.clip(idx.astype(int), 0, N - 2); fr = idx - i0
                 y[:, o:o + L] += (x[:, i0] * (1 - fr) + x[:, i0 + 1] * fr) * np.sin(np.linspace(np.pi / 2, 0, L)) ** 2 * gain[k]
