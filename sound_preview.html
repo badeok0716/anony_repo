@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sound Review</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="static/css/style.css?v=d8124013">
+<style>
+  main { max-width: 1500px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.5rem; margin: 0 0 6px; }
+  .lead { color: var(--muted); margin: 0 0 24px; }
+  .row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 36px; }
+  .row h2 { grid-column: 1 / -1; font-size: 1.15rem; margin: 0; }
+  figure { margin: 0; }
+  figure video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; background: #101118; }
+  figcaption { margin-top: 6px; font-weight: 600; }
+  figcaption span { display: block; font-weight: 400; color: var(--muted); font-size: 0.88rem; }
+  figcaption a { color: inherit; }
+  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sound review: a heavier engine</h1>
+  <p class="lead">Three candidates for the inference-time videos, all real recordings used as recorded (no synthesis, no denoising, no EQ) with the same rule as the current page: the engine always has the rpm the dial calls for (rising = the recording's own rev-up, falling = lower rpm), a gradual start, and a wind-down after the task is done. Turn the sound on. The main page keeps the current Ferrari until one is chosen.</p>
+  <section class="row"><h2>Trash cleanup (q99)</h2>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_trash_ford_v8.mp4"></video><figcaption>1 · Ford 5.0 L V8<span>real recording (inside the car) of its slow rev-up; deep, ~90% of the sound energy below 150 Hz. Source: <a href="https://freesound.org/people/noiseloop/sounds/455926/">&ldquo;Acceleration sounds of Ford V8 5 Liter engine&rdquo;</a> by noiseloop, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</span></figcaption></figure>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_trash_truck.mp4"></video><figcaption>2 · V8 truck<span>real recording of a truck accelerating from idle; the heaviest of the three (~97% below 150 Hz). Source: <a href="https://freesound.org/people/oldestmillennial/sounds/538212/">&ldquo;TruckRev.wav&rdquo;</a> by oldestmillennial, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</span></figcaption></figure>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_trash_f355_low.mp4"></video><figcaption>3 · current Ferrari, lower<span>the same Ferrari F355 recording as on the page, played at 0.75&times; so the engine runs lower and heavier (no synthesis, no EQ). Source: <a href="https://freesound.org/people/enginemusic/sounds/43484/">&ldquo;ferrari355underhood4.mp3&rdquo;</a> by enginemusic, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</span></figcaption></figure>
+  </section>
+  <section class="row"><h2>Cup stacking (q99)</h2>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_cup_ford_v8.mp4"></video><figcaption>1 · Ford 5.0 L V8</figcaption></figure>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_cup_truck.mp4"></video><figcaption>2 · V8 truck</figcaption></figure>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_cup_f355_low.mp4"></video><figcaption>3 · current Ferrari, lower</figcaption></figure>
+  </section>
+  <section class="row"><h2>Towel folding (q95)</h2>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_towel_ford_v8.mp4"></video><figcaption>1 · Ford 5.0 L V8</figcaption></figure>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_towel_truck.mp4"></video><figcaption>2 · V8 truck</figcaption></figure>
+    <figure><video controls playsinline preload="metadata" src="static/tempo/preview/split_towel_f355_low.mp4"></video><figcaption>3 · current Ferrari, lower</figcaption></figure>
+  </section>
+</main>
+</body>
+</html>
