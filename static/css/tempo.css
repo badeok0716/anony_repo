@@ -85,3 +85,10 @@
 .ladder-note { font-size: 0.85rem; color: var(--faint); }
 .tempo-credit { font-size: 0.8rem; color: var(--faint); }
 .tempo-credit a { color: inherit; }
+/* zero-shot comparisons: same caption design as the ladders (2026-10-27) */
+.zs .demo-caption { max-width: none; text-align: center; }
+.zs .result { white-space: nowrap; color: var(--text); font-weight: 600; }
+.zs .result .warn { color: #dc2626; } .zs .result .good { color: #15803d; }
+.zs .result .sep { display: inline-block; width: 1.5px; height: 1em; margin: 0 14px; background: #c4c9d0; vertical-align: -0.15em; }
+.zs .result .it { white-space: nowrap; }
+@media (max-width: 1000px) { .zs .result { white-space: normal; } }
