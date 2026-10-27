@@ -15,11 +15,11 @@ W, H = 1932, 726; PW, PH = 958, 539; GAP = 16; X0 = (W - 2 * PW - GAP) // 2; Y0 
 GREEN, RED, BLUE, GREY = (34, 160, 70), (220, 38, 38), (43, 63, 186), (90, 90, 96)
 TASKS = {
     "banana": dict(total=2, timeout=30.0, unit="bananas", panels=[
-        dict(title="Baseline (Default 1×)", col=GREY, ep="v3_20261022_103537"),
-        dict(title="Ours (q99)", col=BLUE, ep="v3_20261022_085244")]),
+        dict(title="Default 1× + PD", col=GREY, ep="v3_20261022_103537"),
+        dict(title="Ours (q99) + our controller", col=BLUE, ep="v3_20261022_084414")]),
     "cube": dict(total=9, timeout=60.0, unit="cubes", panels=[
-        dict(title="Baseline (Default 1×)", col=GREY, ep="v3_20261021_095416"),
-        dict(title="Ours (q99)", col=BLUE, ep="v3_20261021_105456")]),
+        dict(title="Default 1× + PD", col=GREY, ep="v3_20261021_095416"),
+        dict(title="Ours (q99) + our controller", col=BLUE, ep="v3_20261021_101743")]),
 }
 
 
