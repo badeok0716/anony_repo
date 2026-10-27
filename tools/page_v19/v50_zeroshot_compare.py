@@ -16,10 +16,10 @@ GREEN, RED, BLUE, GREY = (34, 160, 70), (220, 38, 38), (43, 63, 186), (90, 90, 9
 TASKS = {
     "banana": dict(total=2, timeout=30.0, unit="bananas", panels=[
         dict(title="Baseline (Default 1×)", col=GREY, ep="v3_20261022_103537"),
-        dict(title="Ours (q99)", col=BLUE, ep="v3_20261022_084414")]),
+        dict(title="Ours (q99)", col=BLUE, ep="v3_20261022_085244")]),
     "cube": dict(total=9, timeout=60.0, unit="cubes", panels=[
         dict(title="Baseline (Default 1×)", col=GREY, ep="v3_20261021_095416"),
-        dict(title="Ours (q99)", col=BLUE, ep="v3_20261021_111052")]),
+        dict(title="Ours (q99)", col=BLUE, ep="v3_20261021_105456")]),
 }
 
 
