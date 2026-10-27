@@ -93,7 +93,7 @@
   <section id="abstract" class="abstract">
     <div class="container narrow">
       <h2 class="section-title">Abstract</h2>
-      <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction and a motion path, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in 3.43&nbsp;s, 1.65&times; faster than baseline's 5.67&nbsp;s while succeeding in all 30 trials. Videos and further material are available at <a href="https://anonymous.4open.science/w/anony_repo-882B/">https://anonymous.4open.science/w/anony_repo-882B/</a>.</p>
+      <p>The pace of a robot demonstration is often determined by the teleoperator rather than by the task itself. As a result, the same motion can appear at widely different speeds across demonstrations, and policies trained on such data may inherit operator-specific timing along with task behavior. We propose to learn a speed prior directly from large-scale demonstration data. Given a task instruction, a motion path and the images along it, it predicts a distribution over execution speed along the path, from which a chosen quantile defines a consistent clock for retiming each demonstration. Existing methods derive the acceleration signal from the very data they accelerate, so each new task costs another fit, annotation, or pair of predefined rates. A single trained speed prior instead covers every task in a corpus. We fit a speed prior on both robot teleoperation data and handheld demonstrations in which a human arm, rather than a robot arm, moves the gripper, and use it to retime robot demonstrations to the handheld pace before fine-tuning a vision-language-action policy. For execution, we pair the policy with a real-time optimal-control layer that tracks predicted action chunks under robot constraints using the predicted pace. On 120 RoboLab tasks, policies fine-tuned on our learned clocks succeed more often and move with up to half the jerk compared with policies fine-tuned on the original demonstration timing and uniformly accelerated to the same speed. On a real robot, our policy stacks cups in 3.50&nbsp;s, 1.72&times; faster than the default policy&rsquo;s 6.02&nbsp;s while succeeding as often, in 29 of 30 trials. Videos and further material are available at <a href="https://anonymous.4open.science/w/anony_repo-882B/">https://anonymous.4open.science/w/anony_repo-882B/</a>.</p>
     </div>
   </section>
 
@@ -103,7 +103,7 @@
 
       <figure class="figure">
         <div class="figure-scroll">
-          <a href="static/figures/pace.svg?v=fd0761dd"><img src="static/figures/pace.svg?v=fd0761dd" width="524" height="162"
+          <a href="static/tempo/fig_pace.svg?v=1"><img src="static/tempo/fig_pace.svg?v=1" width="524" height="143"
              alt="Speed prior pipeline: path windows, speed prior, speed along the path, and clock"></a>
         </div>
         <p class="scroll-hint">Swipe to see the whole figure, or tap to enlarge.</p>
@@ -113,7 +113,7 @@
 
       <figure class="figure">
         <div class="figure-scroll">
-          <a href="static/figures/solver.svg?v=a9652eb3"><img src="static/figures/solver.svg?v=a9652eb3" width="524" height="144"
+          <a href="static/tempo/fig_solver.svg?v=1"><img src="static/tempo/fig_solver.svg?v=1" width="524" height="131"
              alt="One execution cycle: tempo policy, then the solver's draft, splice and smooth steps"></a>
         </div>
         <p class="scroll-hint">Swipe to see the whole figure, or tap to enlarge.</p>
