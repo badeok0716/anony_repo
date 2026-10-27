@@ -1,5 +1,5 @@
 """Zero-shot comparison videos (2026-10-27), in the page's existing banana format (white canvas 1932x726, two panels,
-titles, timers, "1x REAL-TIME - NOT SPED UP" pill), from the exterior camera of 138-PC rollouts (robolab_v3 20261021/22).
+titles, timers, "1x REAL-TIME" pill), from the exterior camera of 138-PC rollouts (robolab_v3 20261021/22).
 Added like the fine-tuned ladders: a success counter per panel (operator success marks), a green "Done" timer when the run
 completes (last success mark), an outcome badge when a clip ends. Clock = time since the policy start (ext video t=0 =
 policy start: its length equals duration_s). Usage: python v50_zeroshot_compare.py TASK OUT.mp4"""
@@ -75,7 +75,7 @@ def main(task, out):
                 badge(d, x + PW / 2, Y0 + PH - 40, f"{cfg['total']} / {cfg['total']} · {done:.2f} s", GREEN, fB)
             elif ended:
                 badge(d, x + PW / 2, Y0 + PH - 40, f"{ns} / {cfg['total']}" + (f" · {cfg['timeout']:g} s timeout" if inf["timed_out"] else ""), RED, fB)
-        pill = "1× REAL-TIME · NOT SPED UP"; pw_ = d.textlength(pill, font=fP)
+        pill = "1× REAL-TIME"; pw_ = d.textlength(pill, font=fP)
         d.rounded_rectangle((W / 2 - pw_ / 2 - 40, H - 52, W / 2 + pw_ / 2 + 20, H - 14), 10, fill=(32, 34, 40))
         d.ellipse((W / 2 - pw_ / 2 - 26, H - 39, W / 2 - pw_ / 2 - 14, H - 27), fill=RED)
         d.text((W / 2 - pw_ / 2, H - 33), pill, font=fP, fill=(255, 255, 255), anchor="lm")
