@@ -19,7 +19,7 @@ TASKS = {
         dict(title="Ours (q99) + our controller", col=BLUE, ep="v3_20261022_084414")]),
     "cube": dict(total=9, timeout=60.0, unit="cubes", panels=[
         dict(title="Default 1× + PD", col=GREY, ep="v3_20261021_095416"),
-        dict(title="Ours (q99) + our controller", col=BLUE, ep="v3_20261021_101743")]),
+        dict(title="Ours (q99) + our controller", col=BLUE, ep="v3_20261021_111052")]),
 }
 
 
