@@ -21,6 +21,7 @@
 .tempo-split figcaption, .tempo-text, .tempo-note { color: var(--muted); font-size: 0.92rem; margin-top: 10px; }
 .tempo-note { font-size: 0.85rem; color: var(--faint); }
 .tempo-sub { margin: 40px 0 4px; font-size: 1.25rem; font-weight: 600; }
+.section-title + .tempo-sub { margin-top: 8px; }
 
 /* chunk explorer: video | 3D path | quantile scale */
 .chunk { display: grid; grid-template-columns: minmax(200px, 300px) minmax(0, 1fr) 96px; gap: 16px; margin-top: 14px; align-items: stretch; }

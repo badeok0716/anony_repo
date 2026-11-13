@@ -11,23 +11,40 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&display=swap">
-<link rel="stylesheet" href="static/css/style.css?v=d8124013">
-<link rel="stylesheet" href="static/css/tempo.css?v=18">
+<link rel="stylesheet" href="static/css/style.css?v=pr9">
+<link rel="stylesheet" href="static/css/tempo.css?v=19">
 <script src="static/js/tempo.js?v=18" defer></script>
+<script src="static/js/toc.js?v=1" defer></script>
 </head>
 <body>
+
+<nav class="page-toc" aria-label="Contents">
+  <div class="page-toc-title">Contents</div>
+  <ul>
+    <li><a href="#demos">Real-world results</a></li>
+    <li class="toc-sub"><a href="#fine-tuned">Fine-tuned</a></li>
+    <li class="toc-sub"><a href="#zero-shot">Zero-shot</a></li>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#method">Method</a></li>
+    <li><a href="#training-time">Retiming demonstrations at training time</a></li>
+    <li><a href="#inference-time">Controlling the pace at inference time</a></li>
+    <li class="toc-sub"><a href="#tempo-channels">Action space augmented with tempo channels</a></li>
+    <li class="toc-sub"><a href="#real-robot-execution">Real-robot execution</a></li>
+    <li class="toc-sub"><a href="#four-clocks">One path, four clocks</a></li>
+  </ul>
+</nav>
 
 <header class="hero">
   <div class="container">
     <h1 class="title">Retiming Robot Demonstrations <br>with a Learned Speed Prior</h1>
     <p class="authors">Anonymous Authors</p>
     <p class="venue">Under review as a conference paper at ICLR 2027</p>
-    <nav class="links" aria-label="Sections">
-      <a class="button" href="#demos"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg><span class="hide-sm">Real-time</span>Videos</a>
-      <a class="button" href="#abstract"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h7l3 3v10H3zm2 5v1h6v-1zm0 2.5v1h6V9zm0 2.5v1h4v-1z"/></svg>Abstract</a>
-      <a class="button" href="#method"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 5h4v6H1zm5 2h4v2H6zm5-2h4v6h-4z"/></svg>Method</a>
-      <a class="button" href="#training-time">Training-time tempo</a>
-      <a class="button" href="#inference-time">Inference-time tempo</a>
+    <nav class="section-nav" aria-label="Sections">
+      <a href="#demos">Results</a>
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#training-time">Training time</a>
+      <a href="#inference-time">Inference time</a>
     </nav>
   </div>
 </header>
@@ -41,7 +58,7 @@
       </div>
       <p class="lead">Real-robot rollouts, side by side. <strong>Ours</strong>: our retimed policy with the predicted tempo and our controller.</p>
 
-      <div class="group-head">
+      <div class="group-head" id="fine-tuned">
         <h2 class="group-title">Fine-tuned</h2>
         <p class="group-note">Four real runs per task: <strong>Default 1&times; + PD</strong>, <strong>Default 1&times; + high-gain PD</strong> (gains &times;4, velocity gains &times;2, no step clipping), <strong>Default 1&times; + our controller</strong>, and <strong>Ours</strong> (predicted tempo + our controller). <em>Default</em>: DROID joint-position policy fine-tuned on the demonstrations at their recorded timing.</p>
       </div>
@@ -54,7 +71,7 @@
       <figure class="demo ladder">
         <h3 class="demo-title">Cup stacking</h3>
         <video src="static/tempo/ladder_cup.mp4?v=5" controls muted playsinline preload="metadata" aria-label="Cup stacking: four runs side by side, real time"></video>
-        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.39 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.50 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span></figcaption>
+        <figcaption class="demo-caption"><span class="result"><span class="it">Default 1&times; + PD <span class="mk ok" aria-label="success"></span> 8.39 s</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + high-gain PD <span class="mk no" aria-label="failure"></span> (timeout)</span><span class="sep" aria-hidden="true"></span><span class="it">Default 1&times; + our controller <span class="mk ok" aria-label="success"></span> 4.50 s</span><span class="sep" aria-hidden="true"></span><span class="it">Ours <span class="mk ok" aria-label="success"></span> 3.16 s</span></span><br>Times are from a single run of each policy.</figcaption>
       </figure>
       <figure class="demo ladder">
         <h3 class="demo-title">Towel folding</h3>
@@ -63,9 +80,9 @@
       </figure>
 
 
-      <div class="group-head sep">
+      <div class="group-head sep" id="zero-shot">
         <h2 class="group-title">Zero-shot</h2>
-        <p class="group-note">No task-specific fine-tuning. <strong>Baseline</strong>: DROID joint-position policy, tracked by a PD controller.</p>
+        <p class="group-note">No task-specific fine-tuning. <em>Default</em>: DROID joint-position policy trained at the recorded timing of DROID.</p>
       </div>
 
       <figure class="demo zs">
@@ -123,7 +140,7 @@
     </div>
   </section>
 <section id="training-time" class="tempo"><div class="container">
-<h2 class="section-title">Aligning the tempo at training time</h2>
+<h2 class="section-title">Retiming demonstrations at training time</h2>
 <p class="tempo-intro">Demonstrators move at their own pace, so situations that look the same can come with action labels that run at very different speeds. Below are three demonstrations at nearly the same moment of cup stacking, just after the first cup is picked up. Laid out at one waypoint per 1/15 s, their action labels spread far apart along the same path. Retiming every demonstration to the median clock of our learned speed prior brings the same waypoints back together, so the same situation comes with the same tempo, which is easier to imitate.</p>
 <figure class="tempo-figure train-figure">
 <svg class="train-fig" viewBox="0 0 1000 560" role="img" aria-label="Three similar post-grasp observations; their waypoints before and after tempo alignment.">
@@ -367,6 +384,7 @@
 </div></section>
 <section id="inference-time" class="tempo"><div class="container">
 <h2 class="section-title">Controlling the pace at inference time</h2>
+<h3 class="tempo-sub" id="tempo-channels">Action space augmented with tempo channels</h3>
 <figure class="tempo-figure">
 <svg class="tempo-fig" viewBox="0 0 1000 404" role="img" aria-label="The action expert outputs 32 values per step: 7 joints and the gripper (the action, retimed at the default step as q50) and three tempo channels at dims 8-10. Each channel retimes the same 15-step action chunk.">
 <text x="153.0" y="22" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2328">action expert output</text>
@@ -503,6 +521,7 @@
 
 <figcaption>Choose the pace as a quantile of the speed prior, i.e. of the speeds demonstrated for the same motion across the training data (q90, q95, q99), or keep the default step of 1/15 s (q50).</figcaption>
 </figure>
+<h3 class="tempo-sub" id="real-robot-execution">Real-robot execution</h3>
 <p class="tempo-intro">On the right is the recorded execution: the policy predicts how fast each action should run, and our controller executes that tempo within the robot's limits. On the left, the same footage is slowed down so that every action takes the default time step (1/15 s); it is a replay of the recording, not a second run. Turn on the sound: the engine speeds up when the executed tempo rises and slows down when it falls.</p>
 
 <nav class="tempo-tabs" role="tablist" aria-label="Task">
@@ -516,7 +535,7 @@
   <figcaption>The dial on the right video shows the executed speed-up over one action per 1/15 s, live: <b>0%</b> at the top, slower to the left, faster to the right. The tempo changes within the task; it is not a uniform speed-up.<br><span class="tempo-credit">Engine sound: <a href="https://freesound.org/people/enginemusic/sounds/43484/">&ldquo;ferrari355underhood4.mp3&rdquo;</a> by enginemusic, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>, modified.</span></figcaption>
 </figure>
 
-<h3 class="tempo-sub">One path, four clocks</h3>
+<h3 class="tempo-sub" id="four-clocks">One path, four clocks</h3>
 <p class="tempo-text">The same recorded Cup motion replayed on four tempo channels. <b>q50</b> (one action per 1/15 s) always runs; pick a faster channel on the scale to race it against q50. The video overlays the q50 run as a faint ghost.</p>
 <div class="chunk">
   <div class="chunk-video">
