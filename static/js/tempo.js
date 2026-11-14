@@ -143,6 +143,10 @@
   ["seeked", "timeupdate", "loadeddata", "pause"].forEach((ev) => video.addEventListener(ev, draw));
 
   placeScale(); setLabel();
-  fetch("static/data/chunk.json").then((r) => r.json()).then((j) => { D = j; planT = D.plans.map((p) => p[0]); setupView(); draw(); })
+  const start = (j) => { D = j; planT = D.plans.map((p) => p[0]); setupView(); draw(); };
+  /* static/data/chunk.js sets window.TEMPO_CHUNK (same content as chunk.json): a host that serves the page
+     sandboxed gives it an opaque origin, where fetch() of the JSON is refused but a script tag still loads. */
+  if (window.TEMPO_CHUNK) start(window.TEMPO_CHUNK);
+  else fetch("static/data/chunk.json").then((r) => r.json()).then(start)
     .catch((e) => { readout.textContent = "Could not load chunk data: " + e; });
 })();
